@@ -1,0 +1,21 @@
+extends layout
+
+block content
+	h2 测试版本系统
+	p(class="text-right") power by swellee.
+	p(id='ver')= ver
+	hr(id='pubtag' data-pubing="#{pubing}")
+	div(class='container-fluid')
+		div(class='row-fluid')
+			div(class='span3 container',id='sideBar')
+				div(class='btn-group btn-group-vertical',id='branchs')
+			div(class='span9',id='contents')
+				span(class="label label-important" id="selectInfo") 请先在左侧选择一个要打版本的分支
+				div(class="btn-group" id="btns")
+					button(class='btn btn-success btn-small',id='pubLocal') 打测试版
+					button(class='btn btn-warning btn-small',id='pubDist') 打发行版
+					button(class='btn btn-danger btn-small',id='cleanBr') 清除该分支
+				pre(class='container',id="dash")
+				div(id='pubwarn' class='alert alert-error')
+					span(class='badge badge-important') sorry!
+					span 当前有个版本尚未编译结束，请稍后刷新再看！

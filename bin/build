@@ -1,0 +1,176 @@
+#!/bin/sh
+
+# 发远程版本
+dist() {
+	git checkout -f "$1"
+	git pull
+	echo '\033[40;37m开始打本期功能版本，大约需要15分钟...\033[0m'
+	# 替换默认分隔符，以保证打印时换行的正常处理
+	ifs=$IFS; 
+	IFS="\~~"; 
+
+	cfg=`cat .n2.cfg`
+	vstr=`cat .n2.cfg | grep "version"`
+	curVer=$2
+
+	# 提交版本号	
+	echo ${cfg/$vstr/"version = $curVer"} > .n2.cfg
+	git add .n2.cfg
+	git commit -m "ver"
+	git push
+	# 分隔符回置
+	IFS=ifs
+
+	#更新api功能暂停
+	# #更新api
+	# cd "$apidir"
+	# #有对应api分支的，拉取对应分支的api,没有就用develop分支的api
+	# if [[ "${branchapis[@]}" =~ "$1" ]]; then
+	# 	git checkout -f "$1"
+	# else
+	# 	git checkout -f develop
+	# fi
+	# git pull
+	# cd "$apigen"
+	# java -cp ApiGen.jar ApiGen -f ../flowerTool/api/main.api -t ./template -g ts -o ./
+ #  	cp ./ts/api.ts "${maindir}/src/app/data/"
+ #  	cp ../flowerTool/datats/loader.ts "${maindir}/src/app/data/"
+ #  	cp ../flowerTool/datats/data.ts "${maindir}/src/app/data/data.tsc"
+ #  	rm -r ts
+	
+
+	# 切回发版目录
+	# cd "$maindir"
+	# cd "../$1"
+	# git commit -am "api & data"
+	# git pull
+	# git push
+
+	# 编译打包
+	./n2build dist
+
+	if [[ $? -ne 0 ]]; then
+		#打包出错
+		echo "\033[41;37m发版出错了！！！！\033[0m"
+		return;
+	fi
+	
+	#test
+	echo 打包完成，暂不上转
+	return
+
+	# 压缩上传部署
+	cp -f app.json publish/
+	mv publish hc_client
+	zip -ry hc_client.zip hc_client
+
+	if [[ $1 = "pingshen" ]];then
+		scp -P50050 hc_client.zip root@101.227.80.116:/opt/www/hc/
+		#不覆盖已有的app.json
+		ssh root@101.227.80.116 -p 50050 'cd /opt/www/hc/; cp -f hc_client/app.json ./; rm -rf hc_client; unzip hc_client.zip; mv -f app.json hc_client/; rm -f hc_client.zip;'
+		rm -f hc_client.zip
+		rm -rf hc_client
+	else 
+		scp -P50044 hc_client.zip root@101.227.80.115:/opt/www/hc/
+		ssh root@101.227.80.115 -p 50044 'cd /opt/www/hc/; rm -rf hc_client; unzip hc_client.zip; mv -f hc_client.zip ../hc_release/;'
+		mv -f hc_client.zip ~/Desktop/
+		rm -rf hc_client
+	fi;
+	# 打包成功
+	# echo "\033[40;37m$2\033[0m"
+}
+
+# 发本地版本
+localPub() {
+#更新api功能暂停
+	#更新api
+	# cd "$apidir"
+	# #有对应api分支的，拉取对应分支的api,没有就用develop分支的api
+	# if [[ "${branchapis[@]}" =~ "$1" ]]; then
+	# 	git checkout -f "$1"
+	# else
+	# 	git checkout -f develop
+	# fi
+	# git pull
+	# cd "$apigen"
+	# java -cp ApiGen.jar ApiGen -f ../flowerTool/api/main.api -t ./template -g ts -o ./
+ #  	cp ./ts/api.ts "${maindir}/src/app/data/"
+ #  	cp ../flowerTool/datats/loader.ts "${maindir}/src/app/data/"
+ #  	cp ../flowerTool/datats/data.ts "${maindir}/src/app/data/data.tsc"
+ #  	rm -r ts
+	
+	#切回发版目录
+ 	cd "$maindir"
+	cd "../$1"
+	pwd
+	./n2build service stop
+
+	echo 开始更新本地版本，大约1分钟....
+	git pull
+	./n2build
+}
+
+clean(){
+	cd "$maindir"
+	cd ..
+	if [[ -d "./$1"  ]]; then
+		rm -rf ./$1;
+		echo "本地分支$1 清除完成"
+	else
+		echo 目标分支的目录不存在
+	fi
+}
+
+
+# ------------------------程序入口--------------------------------
+# 有对应api的分支
+branchapis=["develop","hotfix","pingshen"]
+repo=git@gitlab.hd.com:flower/client.git
+# 前三个参数为目录
+maindir=$1;
+apidir=$2;
+apigen=$3;
+cd "$maindir"
+
+if [[ $4 = "listbranch" ]]; then
+	cd $maindir;
+	git branch -a;
+elif [[ $4 = "create" ]]; then
+	#切一个新分支
+	git checkout -t "origin/$5";
+	git checkout develop;
+	#新分支拷到单独的同级目录
+	echo 拷贝一个新分支到工作目录，可能花一点时间
+	cd ..
+	git clone -lvb $5 $maindir $5
+elif [[ $4 = "pub" ]]; then
+	if [[ -d "../$5" ]]; then
+		localPub $5;
+		# ls -l ./
+	else
+		git pull
+		echo 拷贝一个新分支到工作目录，可能花一点时间
+		cd ..
+		git clone -lvb $5 $maindir $5
+		localPub "$5";
+	fi
+elif [[ $4 = "distversion" ]]; then
+	vstr=`cat .n2.cfg | grep "version"`
+	echo ${vstr##*=}
+elif [[ $4 = "dist" ]]; then
+	if [[ -d "../$5" ]]; then
+		dist "$5 $6";
+	else
+		git pull
+		echo 拷贝一个新分支到工作目录，可能花一点时间
+		cd ..
+		git clone -lvb $5 $maindir $5
+		dist "$5 $6"
+	fi
+elif [[ $4 = "clean" ]]; then
+	clean "$5";
+fi
+
+
+
+
