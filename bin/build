@@ -2,9 +2,12 @@
 
 # 发远程版本
 dist() {
-	git checkout -f "$1"
+	cd $maindir
+	cd ../$1
+	./n2build service stop
+
 	git pull
-	echo '\033[40;37m开始打本期功能版本，大约需要15分钟...\033[0m'
+	echo '开始编译$1 发行版 ，大约需要10分钟...'
 	# 替换默认分隔符，以保证打印时换行的正常处理
 	ifs=$IFS; 
 	IFS="\~~"; 
@@ -51,7 +54,7 @@ dist() {
 
 	if [[ $? -ne 0 ]]; then
 		#打包出错
-		echo "\033[41;37m发版出错了！！！！\033[0m"
+		echo "发版出错了！！！"
 		return;
 	fi
 	
@@ -98,11 +101,9 @@ localPub() {
  #  	cp ../flowerTool/datats/loader.ts "${maindir}/src/app/data/"
  #  	cp ../flowerTool/datats/data.ts "${maindir}/src/app/data/data.tsc"
  #  	rm -r ts
-	
 	#切回发版目录
- 	cd "$maindir"
-	cd "../$1"
-	pwd
+ 	cd $maindir
+	cd ../$1
 	./n2build service stop
 
 	echo 开始更新本地版本，大约1分钟....
@@ -125,12 +126,11 @@ clean(){
 # ------------------------程序入口--------------------------------
 # 有对应api的分支
 branchapis=["develop","hotfix","pingshen"]
-repo=git@gitlab.hd.com:flower/client.git
 # 前三个参数为目录
 maindir=$1;
 apidir=$2;
 apigen=$3;
-cd "$maindir"
+cd $maindir
 
 if [[ $4 = "listbranch" ]]; then
 	cd $maindir;
@@ -146,7 +146,6 @@ elif [[ $4 = "create" ]]; then
 elif [[ $4 = "pub" ]]; then
 	if [[ -d "../$5" ]]; then
 		localPub $5;
-		# ls -l ./
 	else
 		git pull
 		echo 拷贝一个新分支到工作目录，可能花一点时间

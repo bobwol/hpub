@@ -35,12 +35,10 @@ router.get('/', function(req, res, next) {
 	}
 
 	router.pubing = true;
-	var cmdParas = [maindir, apidir, apigen].concat(req.query.cmd.split(/\s+/));
-	//解析命令
-	var cmd = shellpath;
 
+	var cmdParas = [maindir, apidir, apigen].concat(req.query.cmd.split(/\s+/));
 	if (req.query.pipe) {
-		var sp = sh.spawn(cmd, cmdParas);
+		var sp = sh.spawn(shellpath, cmdParas);
 		var splitter = new Liner();
 		sp.stdout.pipe(splitter).pipe(res);
 		splitter.on("data", (data)=>{
@@ -48,7 +46,7 @@ router.get('/', function(req, res, next) {
 		})
 	}
 	else{
-		sh.execFile(cmd, cmdParas, (err, stdout, stderr)=>{
+		sh.execFile(shellpath, cmdParas, (err, stdout, stderr)=>{
 			res.send(stdout);
 			console.log(stdout)
 		})
