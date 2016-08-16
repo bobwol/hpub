@@ -26,7 +26,6 @@ router.get('/', function(req, res, next) {
 
 	if (!req.query.cmd) {
 		res.render("index", {ver: "alpha", pubing: false});
-		console.log(11)
 		return;
 	}
 
@@ -38,7 +37,7 @@ router.get('/', function(req, res, next) {
 	var cmdParas = [maindir, apidir, apigen].concat(req.query.cmd.split(/\s+/));
 	var cmdTag = cmdParas.join("_")
 	//运行中的命令标记
-	if (router[cmdTag]) {
+	if (cmdTag.indexOf("listbranch") == -1 && router[cmdTag]) {
 		res.send("有一个同分支同类型的任务正在运行，请稍后再试");
 		console.log("conflict")
 		return;
