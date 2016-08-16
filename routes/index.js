@@ -8,7 +8,7 @@ var Liner = require("linerstream");
 // config配置说明
 var cfg = require("../cfg/config.json");
 //workpath 工作目录，该目录下至少有一个maindir配置的文件夹，
-var workpath = path.join(home, cfg.workpath);
+var workpath = path.resolve(cfg.workpath);
 //shell 本地脚本文件，网页上的query命令都会交给这个脚本执行，避免直接执行query时招至攻击
 var shellpath = path.join(process.cwd(), "bin/build");
 //maindir egret项目路径，需位于workpath目录下
