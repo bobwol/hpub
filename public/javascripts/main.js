@@ -34,6 +34,7 @@ function getBranchInfo() {
         if (status != 4) {
             return;
         }
+        data = data.replace("*","")
         var lines = data.split("\n");
         var locals = [];
         var remotes = [];
@@ -45,7 +46,6 @@ function getBranchInfo() {
             }
             if (ln.indexOf("remotes") == -1) {
                 //本地已有的分支
-                ln = ln.replace("*", "");
                 locals.push(ln);
                 $("#branchs").append(`<button class='btn btn-small btn-info' label='${ln}' onclick='chooseBranch("${ln}")'>${ln}</button>`);
             } else {
