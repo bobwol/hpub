@@ -12,11 +12,11 @@ var workpath = path.join(home, cfg.workpath);
 //shell 本地脚本文件，网页上的query命令都会交给这个脚本执行，避免直接执行query时招至攻击
 var shellpath = path.join(process.cwd(), "bin/build");
 //maindir egret项目路径，需位于workpath目录下
-var maindir = path.resolve(workpath, cfg.maindir);
+var maindir = path.join(workpath, cfg.maindir);
 //apidir api和data所在路径
-var apidir = path.resolve(workpath, cfg.apidir);
+var apidir = path.join(workpath, cfg.apidir);
 //apigen 生成api的工具路径
-var apigen = path.resolve(workpath, cfg.apigen);
+var apigen = path.join(workpath, cfg.apigen);
 
 
 //允许的query命令
