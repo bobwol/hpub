@@ -39,22 +39,26 @@ router.get('/', function(req, res, next) {
 	//运行中的命令标记
 	if (cmdTag.indexOf("listbranch") == -1 && router[cmdTag]) {
 		res.send("有一个同分支同类型的任务正在运行，请稍后再试");
-		console.log("conflict")
 		return;
 	}
 
 	router[cmdTag] = true;
 	if (req.query.pipe) {
-		var sp = sh.spawn(shellpath, cmdParas);
 		var splitter = new Liner();
+		var sp = sh.spawn(shellpath, cmdParas);
 		sp.stdout.pipe(splitter).pipe(res);
-		splitter.on("data", (data)=>{
-			console.log(data.toString());
+		sp.stdout.on("data",(data)=>{
+			console.log(data.toString())
 		})
 	}
 	else{
 		sh.execFile(shellpath, cmdParas, (err, stdout, stderr)=>{
+			if (err) {
+				res.send(err + err.toString());
+				return;
+			}
 			res.send(stdout);
+
 			console.log(stdout)
 		})
 	}
@@ -63,8 +67,6 @@ router.get('/', function(req, res, next) {
 		router[cmdTag] = false;
 	})
 
-	
-	
 });
 
 

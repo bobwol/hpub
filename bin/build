@@ -102,6 +102,8 @@ localPub() {
  #  	cp ../flowerTool/datats/loader.ts "${maindir}/src/app/data/"
  #  	cp ../flowerTool/datats/data.ts "${maindir}/src/app/data/data.tsc"
  #  	rm -r ts
+
+ 	echo 更新代码中...
 	#切回发版目录
  	cd $maindir
 	./n2build service stop
