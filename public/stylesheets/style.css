@@ -15,9 +15,9 @@ a {
 }
 #pubwarn {
 	visibility: hidden;
-	position: relative;
-	top: -2em;
-	width: 70%;
+	position: absolute;
+	top: 190px;
+	width: 430px;
 	height: 2em;
 }
 .container {

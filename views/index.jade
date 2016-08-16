@@ -1,10 +1,11 @@
 extends layout
 
 block content
-	h2 测试版本系统
-	p(class="text-right") power by swellee.
-	p(id='ver')= ver
-	hr(id='pubtag' data-pubing="#{pubing}")
+	div
+		h2 测试版本系统
+		p(class="text-right") power by swellee.
+		p(id='ver')= ver
+		hr(id='pubtag' data-pubing="#{pubing}")
 	div(class='container-fluid')
 		div(class='row-fluid')
 			div(class='span3 container',id='sideBar')

@@ -25,7 +25,8 @@ var validcmds = ["listbranch", "pub", "create", "clean", "distversion"];
 router.get('/', function(req, res, next) {
 
 	if (!req.query.cmd) {
-		res.render("index", {ver: "alpha", pubing: router.pubing});
+		res.render("index", {ver: "alpha", pubing: false});
+		console.log(11)
 		return;
 	}
 
@@ -34,9 +35,16 @@ router.get('/', function(req, res, next) {
 		return;
 	}
 
-	router.pubing = true;
-
 	var cmdParas = [maindir, apidir, apigen].concat(req.query.cmd.split(/\s+/));
+	var cmdTag = cmdParas.join("_")
+	//运行中的命令标记
+	if (router[cmdTag]) {
+		res.send("有一个同分支同类型的任务正在运行，请稍后再试");
+		console.log("conflict")
+		return;
+	}
+
+	router[cmdTag] = true;
 	if (req.query.pipe) {
 		var sp = sh.spawn(shellpath, cmdParas);
 		var splitter = new Liner();
@@ -53,7 +61,7 @@ router.get('/', function(req, res, next) {
 	}
 	res.on("finish",()=>{
 		console.log("done!")
-		router.pubing = false;
+		router[cmdTag] = false;
 	})
 
 	

@@ -3,10 +3,11 @@
 # 发远程版本
 dist() {
 	cd $maindir
-	cd ../$1
 	./n2build service stop
-
 	git pull
+	cd ../$1
+	git pull
+
 	echo '开始编译$1 发行版 ，大约需要10分钟...'
 	# 替换默认分隔符，以保证打印时换行的正常处理
 	ifs=$IFS; 
@@ -103,8 +104,9 @@ localPub() {
  #  	rm -r ts
 	#切回发版目录
  	cd $maindir
-	cd ../$1
 	./n2build service stop
+ 	git pull
+	cd ../$1
 
 	echo 开始更新本地版本，大约1分钟....
 	git pull
@@ -116,7 +118,7 @@ clean(){
 	cd ..
 	if [[ -d "./$1"  ]]; then
 		rm -rf ./$1;
-		echo "本地分支$1 清除完成"
+		echo 本地分支$1 清除完成
 	else
 		echo 目标分支的目录不存在
 	fi
@@ -133,9 +135,9 @@ apigen=$3;
 cd $maindir
 
 if [[ $4 = "listbranch" ]]; then
-	cd $maindir;
 	git branch -a;
 elif [[ $4 = "create" ]]; then
+	git pull
 	#切一个新分支
 	git checkout -t "origin/$5";
 	git checkout develop;
@@ -147,7 +149,6 @@ elif [[ $4 = "pub" ]]; then
 	if [[ -d "../$5" ]]; then
 		localPub $5;
 	else
-		git pull
 		echo 拷贝一个新分支到工作目录，可能花一点时间
 		cd ..
 		git clone -lvb $5 $maindir $5
@@ -160,7 +161,6 @@ elif [[ $4 = "dist" ]]; then
 	if [[ -d "../$5" ]]; then
 		dist "$5 $6";
 	else
-		git pull
 		echo 拷贝一个新分支到工作目录，可能花一点时间
 		cd ..
 		git clone -lvb $5 $maindir $5
