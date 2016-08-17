@@ -143,6 +143,7 @@ apigen=$3;
 cd $maindir
 
 if [[ $4 = "listbranch" ]]; then
+	git pull -q
 	git branch -a;
 elif [[ $4 = "create" ]]; then
 	git pull

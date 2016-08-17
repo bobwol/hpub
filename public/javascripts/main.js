@@ -33,6 +33,7 @@ function getBranchInfo() {
         if (status != 4) {
             return;
         }
+        $("#branchs").html('');
         data = data.replace("*", "")
         var lines = data.split("\n");
         var locals = [];
