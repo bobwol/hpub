@@ -17,6 +17,9 @@ var maindir = path.join(workpath, cfg.maindir);
 var apidir = path.join(workpath, cfg.apidir);
 //apigen 生成api的工具路径
 var apigen = path.join(workpath, cfg.apigen);
+//取本地的ip加上配置的nginx端口
+var ipstr = sh.execSync('ifconfig').toString();
+var weburl = ipstr.match(/192\.[0-9]+\.[0-9]+\.[0-9]+/)[0] + ":" + cfg.nginxPort + "/";
 
 
 //允许的query命令
@@ -24,53 +27,58 @@ var validcmds = ["listbranch", "pub", "create", "clean", "distversion", "dist"];
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-	if (!req.query.cmd) {
-		res.render("index", {ver: "beta 1"});
-		return;
-	}
+    if (!req.query.cmd) {
+        res.render("index", { ver: "beta 1" });
+        return;
+    }
 
-	if (validcmds.indexOf( req.query.cmd.split(/\s+/)[0]) == -1) {
-		res.send("非法请求！");
-		return;
-	}
+    if (validcmds.indexOf(req.query.cmd.split(/\s+/)[0]) == -1) {
+        res.send("非法请求！");
+        return;
+    }
 
-	var cmdParas = [maindir, apidir, apigen].concat(req.query.cmd.split(/\s+/));
-	var cmdTag = cmdParas.join("_")
-	//运行中的命令标记
-	if (cmdTag.indexOf("listbranch") == -1 && router[cmdTag]) {
-		res.send("有一个同分支同类型的任务正在运行，请稍后再试");
-		return;
-	}
+    var cmdParas = [maindir, apidir, apigen].concat(req.query.cmd.split(/\s+/));
+    var cmdTag = cmdParas.join("_")
+        //运行中的命令标记
+    if (cmdTag.indexOf("listbranch") == -1 && router[cmdTag]) {
+        res.send("有一个同分支同类型的任务正在运行，请稍后再试");
+        return;
+    }
 
-	router[cmdTag] = true;
+    router[cmdTag] = true;
 
-	if (req.query.pipe) {
-		var splitter = new Liner();
-		var sp = sh.spawn(shellpath, cmdParas);
-		sp.stdout.pipe(splitter)//.pipe(res);
-		splitter.on("data",(data)=>{
-			var out = data.toString();
-			console.log(out);
-			res.write(out+"<br>");
-		})
-		splitter.on("end",(data)=>{
-			res.end('');
-		})
-	}
-	else{
-		sh.execFile(shellpath, cmdParas, (err, stdout, stderr)=>{
-			if (err) {
-				res.send(err + err.toString());
-				return;
-			}
-			res.send(stdout);
-			console.log(stdout)
-		})
-	}
-	res.on("finish",()=>{
-		console.log("finish")
-		router[cmdTag] = false;
-	})
+    if (req.query.pipe) {
+        var splitter = new Liner();
+        var sp = sh.spawn(shellpath, cmdParas);
+        sp.stdout.pipe(splitter) //.pipe(res);
+        splitter.on("data", (data) => {
+            var out = data.toString();
+            console.log(out);
+            res.write(out + "<br>");
+        })
+        splitter.on("end", (data) => {
+        	if (cmdTag.indexOf("pub") != -1) {
+        		var br = cmdParas[5];//第5个参数是分支名
+            	res.end(`<a href="${weburl}${br}">点我去测试</a>`);
+        	}
+        	else {
+        		res.end('');
+        	}
+        })
+    } else {
+        sh.execFile(shellpath, cmdParas, (err, stdout, stderr) => {
+            if (err) {
+                res.send(err + err.toString());
+                return;
+            }
+            res.send(stdout);
+            console.log(stdout)
+        })
+    }
+    res.on("finish", () => {
+        console.log("finish")
+        router[cmdTag] = false;
+    })
 
 });
 

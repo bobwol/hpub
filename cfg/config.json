@@ -2,5 +2,6 @@
 	"workpath": "/Users/swellee/Documents/work/",
 	"maindir": "flowerPub",
 	"apidir": "flowerTool",
-	"apigen": "apitools"
+	"apigen": "apitools",
+	"nginxPort":"8080"
 }
