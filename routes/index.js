@@ -28,7 +28,7 @@ var validcmds = ["listbranch", "pub", "create", "clean", "distversion", "dist"];
 router.get('/', function(req, res, next) {
 
     if (!req.query.cmd) {
-        res.render("index", { ver: "beta 1" });
+        res.render("index", { ver: "beta 2" });
         return;
     }
 
@@ -59,7 +59,7 @@ router.get('/', function(req, res, next) {
         splitter.on("end", (data) => {
         	if (cmdTag.indexOf("pub") != -1) {
         		var br = cmdParas[4];//第5个参数是分支名
-            	res.end(`<a href="${weburl}${br}">点我去测试</a>`);
+            	res.end(`<a class="btn btn-small btn-info" href="${weburl}${br}">点我去测试</a>`);
         	}
         	else {
         		res.end('');
