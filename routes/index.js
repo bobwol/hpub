@@ -19,7 +19,7 @@ var apidir = path.join(workpath, cfg.apidir);
 var apigen = path.join(workpath, cfg.apigen);
 //取本地的ip加上配置的nginx端口
 var ipstr = sh.execSync('ifconfig').toString();
-var weburl = ipstr.match(/192\.[0-9]+\.[0-9]+\.[0-9]+/)[0] + ":" + cfg.nginxPort + "/";
+var weburl = "http://" + ipstr.match(/192\.[0-9]+\.[0-9]+\.[0-9]+/)[0] + ":" + cfg.nginxPort + "/";
 
 
 //允许的query命令
@@ -58,7 +58,7 @@ router.get('/', function(req, res, next) {
         })
         splitter.on("end", (data) => {
         	if (cmdTag.indexOf("pub") != -1) {
-        		var br = cmdParas[5];//第5个参数是分支名
+        		var br = cmdParas[4];//第5个参数是分支名
             	res.end(`<a href="${weburl}${br}">点我去测试</a>`);
         	}
         	else {
