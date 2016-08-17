@@ -1,22 +1,45 @@
 extends layout
 
 block content
-	div
-		h2 测试版本系统
-		p(class="text-right") power by swellee.
-		p(id='ver')= ver
-		hr(id='pubtag' data-pubing="#{pubing}")
+	h2 幻城版本系统
+	p(id='ver' class="text-right") 当前版本：#{ver}
+	p(class="text-right") power by swellee.
 	div(class='container-fluid')
+		div(class="row-fluid")
+			span(class="label span3" title="本地分支（蓝色）可直接进行版本操作；远程分支（黄色）需要先检出为本地分支才能进行版本操作！") 分支列表
+			span(class="label span7 label-important" id="selectInfo" title="先选择一个本地分支（蓝色），才能进行版本操作") 请先在左侧选择一个要打版本的分支
 		div(class='row-fluid')
 			div(class='span3 container',id='sideBar')
 				div(class='btn-group btn-group-vertical',id='branchs')
 			div(class='span9',id='contents')
-				span(class="label label-important" id="selectInfo") 请先在左侧选择一个要打版本的分支
 				div(class="btn-group" id="btns")
 					button(class='btn btn-success btn-small',id='pubLocal') 打测试版
 					button(class='btn btn-warning btn-small',id='pubDist') 打发行版
 					button(class='btn btn-danger btn-small',id='cleanBr') 清除该分支
 				pre(class='container',id="dash")
-				div(id='pubwarn' class='alert alert-error')
-					span(class='badge badge-important') sorry!
-					span 当前有个版本尚未编译结束，请稍后刷新再看！
+				div(class="modal fade",id="myModal",tabindex="-1",role="dialog",aria-labelledby="myModalLabel",aria-hidden="true")
+					div(class="modal-dialog")
+						div(class="modal-content")
+							div(class="modal-header")
+								button(type="button",class="close",data-dismiss="modal",aria-hidden="true") &times;
+								检出远程分支？
+								h4(class="modal-title",id="myModalLabel") 
+							div(class="modal-body" id="mBody") 
+							div(class="modal-footer")
+								button(type="button", class="btn btn-default",data-dismiss="modal") 取消
+								button(type="button", id="btnCreateBr", class="btn btn-primary",onclick="createBranch()") 确认检出
+				div(class="modal fade",id="verModal",tabindex="-1",role="dialog",aria-labelledby="verModalLb",aria-hidden="true")
+					div(class="modal-dialog")
+						div(class="modal-content")
+							div(class="modal-header")
+								button(type="button",class="close",data-dismiss="modal",aria-hidden="true") &times;
+								编译发行版
+								h4(class="modal-title",id="verModalLb") 
+							div(class="modal-body" id="mBody") 
+								当前版本号为
+								span(id="curVer")
+								请输入新的版本号：
+								input(id="inputVer")
+							div(class="modal-footer")
+								button(type="button", class="btn btn-default",data-dismiss="modal") 取消
+								button(type="button", id="btnDistBr", class="btn btn-primary",onclick="distBranch()") 编译发行版

@@ -13,18 +13,15 @@ a {
 #btns {
 	visibility:hidden;
 }
-#pubwarn {
-	visibility: hidden;
-	position: absolute;
-	top: 190px;
-	width: 430px;
-	height: 2em;
-}
 .container {
 	border:1px solid #aaaaaa;
 	box-shadow: 0px 10px 5px #aaaaaa;
 	height: 60%;
+	min-height: 50%;
 	overflow: scroll;
+}
+.btn {
+	min-width: 100px;
 }
 #dash {
 	position: fixed;

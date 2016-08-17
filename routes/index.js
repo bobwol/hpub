@@ -20,12 +20,12 @@ var apigen = path.join(workpath, cfg.apigen);
 
 
 //允许的query命令
-var validcmds = ["listbranch", "pub", "create", "clean", "distversion"];
+var validcmds = ["listbranch", "pub", "create", "clean", "distversion", "dist"];
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
 	if (!req.query.cmd) {
-		res.render("index", {ver: "alpha", pubing: false});
+		res.render("index", {ver: "beta 1"});
 		return;
 	}
 
@@ -43,12 +43,18 @@ router.get('/', function(req, res, next) {
 	}
 
 	router[cmdTag] = true;
+
 	if (req.query.pipe) {
 		var splitter = new Liner();
 		var sp = sh.spawn(shellpath, cmdParas);
-		sp.stdout.pipe(splitter).pipe(res);
-		sp.stdout.on("data",(data)=>{
-			console.log(data.toString())
+		sp.stdout.pipe(splitter)//.pipe(res);
+		splitter.on("data",(data)=>{
+			var out = data.toString();
+			console.log(out);
+			res.write(out+"<br>");
+		})
+		splitter.on("end",(data)=>{
+			res.end('');
 		})
 	}
 	else{
@@ -58,12 +64,11 @@ router.get('/', function(req, res, next) {
 				return;
 			}
 			res.send(stdout);
-
 			console.log(stdout)
 		})
 	}
 	res.on("finish",()=>{
-		console.log("done!")
+		console.log("finish")
 		router[cmdTag] = false;
 	})
 

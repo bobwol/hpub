@@ -12,14 +12,13 @@ function initWeb(argument) {
     // get branch info
     getBranchInfo();
 
-    checkPubing();
 }
 
 //使用原生xhr，因为jq的get方法未对响应文件做chunk处理
 function fetch(query, cb) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
-    	console.log(xhr.readyState);
+        console.log(xhr.readyState);
         if (xhr.readyState > 2) {
             cb(xhr.responseText, xhr.readyState);
         }
@@ -34,7 +33,7 @@ function getBranchInfo() {
         if (status != 4) {
             return;
         }
-        data = data.replace("*","")
+        data = data.replace("*", "")
         var lines = data.split("\n");
         var locals = [];
         var remotes = [];
@@ -66,13 +65,6 @@ function getBranchInfo() {
     });
 }
 
-function checkPubing() {
-    if ($("#pubtag").data("pubing") == true) {
-        $("#pubwarn").css("visibility", "visible");
-    } else {
-        $("#pubwarn").css("visibility", "hidden");
-    }
-}
 
 function chooseBranch(branch) {
     if (branch.indexOf("remotes") == -1) { //选中了本地分支
@@ -80,15 +72,20 @@ function chooseBranch(branch) {
         $("#selectInfo").html(`你选中了本地分支->${branch}`);
         $("#btns").css("visibility", "visible");
     } else {
-        var cf = confirm("您选中的是一个远程分支，该分支目前不存在于版本系统目录下，只有检出到版本目录后，才可以编译相应的分支版本。是否检出到版本系统目录下？");
-        if (cf) {
-            var slashId = branch.lastIndexOf("/") + 1;
-            var lb = branch.substring(slashId);
-            fetch(`/?cmd=create ${lb}&pipe=true`, (data, status) => {
-                window.location.reload(); //回到主页
-            })
-        }
+    	$("#mBody").html("您选中的是一个远程分支，该分支目前不存在于版本系统目录下，只有检出到版本目录后，才可以编译相应的分支版本。是否检出到版本系统目录下？");
+        $("#myModal").modal("show");
+        var slashId = branch.lastIndexOf("/") + 1;
+        var lb = branch.substring(slashId);
+        $("#btnCreateBr").data("branch", lb);
     }
+}
+
+function createBranch() {
+	var branch = $("#btnCreateBr").data("branch");
+	$("#mBody").html("后台执行中，请勿做任何操作，完成后会自动刷新页面。正在检出...")
+    fetch(`/?cmd=create ${branch}&pipe=true`, (data, status) => {
+        window.location.reload(); //回到主页
+    })
 }
 
 function pubBranch() {
@@ -109,25 +106,27 @@ function pubBranch() {
 }
 
 function distVer() {
-    fetch(`/?cmd=distversion`, (data, status) => {
-        var ver = prompt(`当前版本号：${data},请输入新的版本号`, data).trim();
-        if (!ver) {
-            ver = data;
-        }
-        distBranch(ver);
-
-    })
-}
-
-function distBranch(ver) {
-    // body...
     if (!selectedBranch) {
         alert("请先选择一个分支，再点‘打版本’按钮！");
         return;
     }
+    fetch(`/?cmd=distversion`, (data, status) => {
+    	$("#curVer").html(data);
+    	$("#inputVer").attr("placeholder", data);
+    	$("#verModal").modal("show");
+    })
+}
+
+function distBranch() {
+	ver = $("#inputVer").text();
+	if (!ver) {
+		ver = $("#curVer").html();
+	}
+	ver = ver.trim();
+	$("#verModal").modal("hide");
     $("#btns").css("visibility", "hidden");
 
-    $("#selectInfo").html(`开始编译分支的发行版->${selectedBranch}，请稍等...`);
+    $("#selectInfo").html(`开始编译分支的发行版->${selectedBranch}，使用版本号${ver},请稍等...`);
     $("#dash").html("正在等待后台响应...");
     fetch(`/?cmd=dist ${selectedBranch} ${ver}&pipe=true`, (data, status) => {
         dash(data);
@@ -142,6 +141,7 @@ function cleanBranch() {
         alert("请先选择一个分支，再点‘清除’按钮！");
         return;
     }
+    $("#dash").html("正在等待后台响应...");
     fetch(`/?cmd=clean ${selectedBranch}`, (data, status) => {
         if (status != 4) {
             return;

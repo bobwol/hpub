@@ -3,12 +3,12 @@
 # 发远程版本
 dist() {
 	cd $maindir
-	./n2build service stop
 	git pull
 	cd ../$1
+	./n2build service stop
 	git pull
 
-	echo '开始编译$1 发行版 ，大约需要10分钟...'
+	echo "开始编译$1 发行版 ，大约需要10分钟..."
 	# 替换默认分隔符，以保证打印时换行的正常处理
 	ifs=$IFS; 
 	IFS="\~~"; 
@@ -51,7 +51,8 @@ dist() {
 	# git push
 
 	# 编译打包
-	./n2build dist
+	./n2build -t dist
+	./n2build service stop
 
 	if [[ $? -ne 0 ]]; then
 		#打包出错
@@ -80,8 +81,9 @@ dist() {
 		mv -f hc_client.zip ~/Desktop/
 		rm -rf hc_client
 	fi;
-	# 打包成功
-	# echo "\033[40;37m$2\033[0m"
+	./n2build service stop
+
+	echo 完成
 }
 
 # 发本地版本
@@ -106,17 +108,20 @@ localPub() {
  	echo 更新代码中...
 	#切回发版目录
  	cd $maindir
-	./n2build service stop
  	git pull
 	cd ../$1
+	./n2build service stop
 
 	echo 开始更新本地版本，大约1分钟....
 	git pull
-	./n2build
+	./n2build -t
+	./n2build service stop
+	echo 完成
 }
 
 clean(){
 	cd "$maindir"
+	git branch -D $1
 	cd ..
 	if [[ -d "./$1"  ]]; then
 		rm -rf ./$1;
@@ -124,6 +129,7 @@ clean(){
 	else
 		echo 目标分支的目录不存在
 	fi
+	echo 完成
 }
 
 
