@@ -95,7 +95,7 @@ function pubBranch() {
     }
     $("#btns").css("visibility", "hidden");
     $("#selectInfo").html(`开始编译本地分支->${selectedBranch}，请稍等...`);
-    $("#dash").html("正在等待后台响应...");
+    $("#dash").html("命令已发送，请勿进行其他操作！正在等待后台响应...");
 
     fetch(`/?cmd=pub ${selectedBranch}&pipe=true`, (data, status) => {
         dash(data);
@@ -127,7 +127,7 @@ function distBranch() {
     $("#btns").css("visibility", "hidden");
 
     $("#selectInfo").html(`开始编译分支的发行版->${selectedBranch}，使用版本号${ver},请稍等...`);
-    $("#dash").html("正在等待后台响应...");
+    $("#dash").html("命令已发送，请勿进行其他操作！正在等待后台响应...");
     fetch(`/?cmd=dist ${selectedBranch} ${ver}&pipe=true`, (data, status) => {
         dash(data);
         if (status == 4) {
@@ -141,7 +141,7 @@ function cleanBranch() {
         alert("请先选择一个分支，再点‘清除’按钮！");
         return;
     }
-    $("#dash").html("正在等待后台响应...");
+    $("#dash").html("命令已发送，请勿进行其他操作！正在等待后台响应...");
     fetch(`/?cmd=clean ${selectedBranch}`, (data, status) => {
         if (status != 4) {
             return;
