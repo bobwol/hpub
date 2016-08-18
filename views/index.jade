@@ -10,7 +10,8 @@ block content
 			span(class="label span7 label-important" id="selectInfo" title="先选择一个本地分支（蓝色），才能进行版本操作") 请先在左侧选择一个要打版本的分支
 		div(class='row-fluid')
 			div(class='span3 container',id='sideBar')
-				div(class='btn-group btn-group-vertical',id='branchs') loading...
+				div(class='btn-group btn-group-vertical',id='branchs')
+					button(class='btn btn-small btn-danger') 加载中...
 			div(class='span9',id='contents')
 				div(class="btn-group" id="btns")
 					button(class='btn btn-success btn-small',id='pubLocal') 打测试版
@@ -22,7 +23,7 @@ block content
 						div(class="modal-content")
 							div(class="modal-header")
 								button(type="button",class="close",data-dismiss="modal",aria-hidden="true") &times;
-								检出远程分支？
+								p 检出远程分支？
 								h4(class="modal-title",id="myModalLabel") 
 							div(class="modal-body" id="mBody") 
 							div(class="modal-footer")
@@ -33,12 +34,11 @@ block content
 						div(class="modal-content")
 							div(class="modal-header")
 								button(type="button",class="close",data-dismiss="modal",aria-hidden="true") &times;
-								编译发行版
+								p 编译发行版
 								h4(class="modal-title",id="verModalLb") 
-							div(class="modal-body" id="mBody") 
-								当前版本号为
-								span(id="curVer")
-								请输入新的版本号：
+							div(class="modal-body" id="mBody")
+								p 当前版本号为
+								span(id="curVer") 请输入新的版本号：
 								input(id="inputVer")
 							div(class="modal-footer")
 								button(type="button", class="btn btn-default",data-dismiss="modal") 取消

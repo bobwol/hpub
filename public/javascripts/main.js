@@ -1,6 +1,6 @@
 var selectedBranch = "";
 // var jqOk
-$(() => {
+$(function(){
     initWeb();
 });
 
@@ -29,7 +29,7 @@ function fetch(query, cb) {
 
 function getBranchInfo() {
 
-    fetch("/?cmd=listbranch", (data, status) => {
+    fetch("/?cmd=listbranch", function(data, status) {
         if (status != 4) {
             return;
         }
@@ -55,7 +55,7 @@ function getBranchInfo() {
 
         $("#branchs").append("<hr>");
         //筛选未checkout 到本地的分支
-        remotes.forEach((r) => {
+        remotes.forEach(function(r) {
             var slashId = r.lastIndexOf("/") + 1;
             var lb = r.substring(slashId);
             if (locals.indexOf(lb) == -1) {
@@ -84,7 +84,7 @@ function chooseBranch(branch) {
 function createBranch() {
 	var branch = $("#btnCreateBr").data("branch");
 	$("#mBody").html("后台执行中，请勿做任何操作，完成后会自动刷新页面。正在检出...")
-    fetch(`/?cmd=create ${branch}&pipe=true`, (data, status) => {
+    fetch(`/?cmd=create ${branch}&pipe=true`, function(data, status) {
         window.location.reload(); //回到主页
     })
 }
@@ -98,7 +98,7 @@ function pubBranch() {
     $("#selectInfo").html(`开始编译本地分支->${selectedBranch}，请稍等...`);
     $("#dash").html("命令已发送，请勿进行其他操作！正在等待后台响应...");
 
-    fetch(`/?cmd=pub ${selectedBranch}&pipe=true`, (data, status) => {
+    fetch(`/?cmd=pub ${selectedBranch}&pipe=true`, function(data, status) {
         dash(data);
         if (status == 4) {
             $("#selectInfo").html(`本地分支->${selectedBranch}，编译完成`);
@@ -111,7 +111,7 @@ function distVer() {
         alert("请先选择一个分支，再点‘打版本’按钮！");
         return;
     }
-    fetch(`/?cmd=distversion`, (data, status) => {
+    fetch(`/?cmd=distversion`, function(data, status) {
     	$("#curVer").html(data);
     	$("#inputVer").attr("placeholder", data);
     	$("#verModal").modal("show");
@@ -129,7 +129,7 @@ function distBranch() {
 
     $("#selectInfo").html(`开始编译分支的发行版->${selectedBranch}，使用版本号${ver},请稍等...`);
     $("#dash").html("命令已发送，请勿进行其他操作！正在等待后台响应...");
-    fetch(`/?cmd=dist ${selectedBranch} ${ver}&pipe=true`, (data, status) => {
+    fetch(`/?cmd=dist ${selectedBranch} ${ver}&pipe=true`, function(data, status) {
         dash(data);
         if (status == 4) {
             $("#selectInfo").html(`本地分支->${selectedBranch}发行版，更新完成`);
@@ -143,7 +143,7 @@ function cleanBranch() {
         return;
     }
     $("#dash").html("命令已发送，请勿进行其他操作！正在等待后台响应...");
-    fetch(`/?cmd=clean ${selectedBranch}`, (data, status) => {
+    fetch(`/?cmd=clean ${selectedBranch}`, function(data, status) {
         if (status != 4) {
             return;
         }
