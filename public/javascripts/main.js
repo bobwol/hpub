@@ -1,6 +1,6 @@
 var selectedBranch = "";
 // var jqOk
-$(function(){
+$(function() {
     initWeb();
 });
 
@@ -17,6 +17,7 @@ function initWeb(argument) {
 //使用原生xhr，因为jq的get方法未对响应文件做chunk处理
 function fetch(query, cb) {
     var xhr = new XMLHttpRequest();
+    xhr.timeout = 1000 * 60 * 20; //最长20min
     xhr.onreadystatechange = function() {
         console.log(xhr.readyState);
         if (xhr.readyState > 2) {
@@ -72,18 +73,22 @@ function chooseBranch(branch) {
         selectedBranch = branch;
         $("#selectInfo").html(`你选中了本地分支->${branch}`);
         $("#btns").css("visibility", "visible");
+        fetch(`/?cmd=log ${branch}`, function(data, status) {
+            $("#dash").html(data);
+        });
     } else {
-    	$("#mBody").html("您选中的是一个远程分支，该分支目前不存在于版本系统目录下，只有检出到版本目录后，才可以编译相应的分支版本。是否检出到版本系统目录下？");
+        $("#mBody").html("您选中的是一个远程分支，该分支目前不存在于版本系统目录下，只有检出到版本目录后，才可以编译相应的分支版本。是否检出到版本系统目录下？");
         $("#myModal").modal("show");
         var slashId = branch.lastIndexOf("/") + 1;
         var lb = branch.substring(slashId);
         $("#btnCreateBr").data("branch", lb);
+
     }
 }
 
 function createBranch() {
-	var branch = $("#btnCreateBr").data("branch");
-	$("#mBody").html("后台执行中，请勿做任何操作，完成后会自动刷新页面。正在检出...")
+    var branch = $("#btnCreateBr").data("branch");
+    $("#mBody").html("后台执行中，请勿做任何操作，完成后会自动刷新页面。正在检出...")
     fetch(`/?cmd=create ${branch}&pipe=true`, function(data, status) {
         window.location.reload(); //回到主页
     })
@@ -112,19 +117,19 @@ function distVer() {
         return;
     }
     fetch(`/?cmd=distversion`, function(data, status) {
-    	$("#curVer").html(data);
-    	$("#inputVer").attr("placeholder", data);
-    	$("#verModal").modal("show");
+        $("#curVer").html(data);
+        $("#inputVer").attr("placeholder", data);
+        $("#verModal").modal("show");
     })
 }
 
 function distBranch() {
-	ver = $("#inputVer").text();
-	if (!ver) {
-		ver = $("#curVer").html();
-	}
-	ver = ver.trim();
-	$("#verModal").modal("hide");
+    ver = $("#inputVer").text();
+    if (!ver) {
+        ver = $("#curVer").html();
+    }
+    ver = ver.trim();
+    $("#verModal").modal("hide");
     $("#btns").css("visibility", "hidden");
 
     $("#selectInfo").html(`开始编译分支的发行版->${selectedBranch}，使用版本号${ver},请稍等...`);

@@ -23,12 +23,12 @@ var weburl = "http://" + ipstr.match(/192\.[0-9]+\.[0-9]+\.[0-9]+/)[0] + ":" + c
 
 
 //允许的query命令
-var validcmds = ["listbranch", "pub", "create", "clean", "distversion", "dist"];
+var validcmds = ["listbranch", "log", "pub", "create", "clean", "distversion", "dist"];
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
     if (!req.query.cmd) {
-        res.render("index", { ver: "beta 2" });
+        res.render("index", { ver: "beta 3" });
         return;
     }
 
@@ -37,7 +37,19 @@ router.get('/', function(req, res, next) {
         return;
     }
 
-    var cmdParas = [maindir, apidir, apigen].concat(req.query.cmd.split(/\s+/));
+    var cmdParas = [maindir, apidir, apigen, weburl].concat(req.query.cmd.split(/\s+/));
+    if (cmdParas[4] == "log") {
+    	console.log(cmdParas[5])
+        sh.exec(`cat bin/execlog | grep ${cmdParas[5]}`, (err, stdout, stderr) => {
+            if (err) {
+                res.send("暂无操作记录");
+                console.log(err)
+            } else {
+                res.send(stdout.toString() + "<br><p class='label'>以上是该分支的操作记录↑</p>");
+            }
+        });
+        return;
+    }
     var cmdTag = cmdParas.join("_")
         //运行中的命令标记
     if (cmdTag.indexOf("listbranch") == -1 && router[cmdTag]) {
@@ -57,13 +69,7 @@ router.get('/', function(req, res, next) {
             res.write(out + "<br>");
         })
         splitter.on("end", (data) => {
-        	if (cmdTag.indexOf("pub") != -1) {
-        		var br = cmdParas[4];//第5个参数是分支名
-            	res.end(`<a class="btn btn-small btn-info" href="${weburl}${br}">点我去测试</a>`);
-        	}
-        	else {
-        		res.end('');
-        	}
+            res.end('');
         })
     } else {
         sh.execFile(shellpath, cmdParas, (err, stdout, stderr) => {
@@ -76,11 +82,48 @@ router.get('/', function(req, res, next) {
         })
     }
     res.on("finish", () => {
-        console.log("finish")
+        console.log("finish");
         router[cmdTag] = false;
+
+        var log = getExecName(req.ip, cmdParas[4], cmdParas[5]);
+        if (log) {
+            sh.exec(`echo '${log}' >> bin/execlog`, (err, stdout, stderr) => {
+                if (err) {
+                    console.log(`写入log失败>>${req.url}`, err);
+                }
+            })
+        }
     })
 
 });
+
+function getExecName(ip, op, branch) {
+    var dt = new Date();
+    var log = dt.getMonth() + 1;
+    log += "月" + dt.getDate() + "日";
+    log += dt.toTimeString().match(/[0-9]+\:[0-9]+\:[0-9]+/)[0]
+    // body...
+    var opName = '';
+    switch (op) {
+        case "pub":
+            opName = "本地编译";
+            break;
+        case "create":
+            opName = "检出分支";
+            break;
+        case "dist":
+            opName = "编发行版";
+            break;
+        case "clean":
+            opName = "清除分支";
+            break;
+        default:
+            return '';
+
+    }
+
+    return log + "由" + ip + "对分支" + branch + "进行了" + opName;
+}
 
 
 module.exports = router;
