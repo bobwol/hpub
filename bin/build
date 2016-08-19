@@ -52,9 +52,11 @@ upapi() {
 # 发远程版本
 dist() {
 	cd $maindir
-	git pull -q
-	cd ../$1
 	./n2build service stop
+	git pull -q
+	git checkout $1
+	git pull
+	cd ../$1
 	git checkout ./
 	git pull -q
 
@@ -99,9 +101,12 @@ localPub() {
  	echo 更新代码中...
 	#切回发版目录
  	cd $maindir
- 	git pull -q
-	cd ../$1
 	./n2build service stop
+ 	git pull -q
+ 	git checkout $1
+ 	git pull -q
+ 	git checkout develop
+	cd ../$1
 
 	#更新api功能暂停
 	# upapi $1

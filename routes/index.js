@@ -26,9 +26,8 @@ var weburl = "http://" + ipstr.match(/192\.[0-9]+\.[0-9]+\.[0-9]+/)[0] + ":" + c
 var validcmds = ["listbranch", "log", "pub", "create", "clean", "distversion", "dist"];
 /* GET home page. */
 router.get('/', function(req, res, next) {
-
     if (!req.query.cmd) {
-        res.render("index", { ver: "beta 3" });
+        res.render("index", { ver: "beta 4" });
         return;
     }
 
@@ -85,7 +84,7 @@ router.get('/', function(req, res, next) {
         console.log("finish");
         router[cmdTag] = false;
 
-        var log = getExecName(req.ip, cmdParas[4], cmdParas[5]);
+        var log = getExecName(getClientIp(req), cmdParas[4], cmdParas[5]);
         if (log) {
             sh.exec(`echo '${log}' >> bin/execlog`, (err, stdout, stderr) => {
                 if (err) {
@@ -96,6 +95,15 @@ router.get('/', function(req, res, next) {
     })
 
 });
+
+function getClientIp(req) {
+        var ipstr = req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
+        return ipstr.split(":").pop();
+}
+
 
 function getExecName(ip, op, branch) {
     var dt = new Date();
