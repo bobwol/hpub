@@ -98,7 +98,7 @@ dist() {
 
 # 发本地版本
 localPub() {
- 	echo 更新代码中...
+ 	echo 更新主目录代码...
 	#切回发版目录
  	cd $maindir
 	./n2build service stop
@@ -107,13 +107,13 @@ localPub() {
  	git pull -q
  	git checkout develop
 	cd ../$1
+	git checkout ./
+	git pull -q
 
 	#更新api功能暂停
 	# upapi $1
 
 	echo 开始更新本地版本，大约1分钟....
-	git checkout ./
-	git pull -q
 	./n2build -t
 	if [[ $? -eq 0 ]]; then
 		echo "<a class='btn btn-small btn-info' href='${weburl}$1'>点我去测试</a>"
@@ -151,6 +151,7 @@ elif [[ $5 = "create" ]]; then
 	git pull
 	#切一个新分支
 	git checkout -t "origin/$6";
+	git pull
 	git checkout develop;
 	#新分支拷到单独的同级目录
 	echo 拷贝一个新分支到工作目录，可能花一点时间
