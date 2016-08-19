@@ -87,6 +87,7 @@ function chooseBranch(branch) {
 }
 
 function createBranch() {
+	$(".modal-footer").hide();
     var branch = $("#btnCreateBr").data("branch");
     $("#mBody").html("后台执行中，请勿做任何操作，完成后会自动刷新页面。正在检出...")
     fetch(`/?cmd=create ${branch}&pipe=true`, function(data, status) {

@@ -22,6 +22,19 @@ upload() {
 		echo "<a class='btn btn-small btn-info' href='http://gc.hgame.com/home/game/appid/100021/gameid/100263/review/2'>点我去测试</a>"
 	fi;
 }
+# 添加一个分支
+clonebranch() {
+	echo 拷贝一个新分支到工作目录，可能花一点时间
+	cd $maindir
+	git fetch -a
+	git checkout -t "origin/$1";
+	git checkout develop
+	cd ..
+	git clone -lvb $1 $maindir $1
+	cd ./$1
+	git config remote.origin.url git@gitlab.hd.com:flower/client.git
+	git pull
+}
 
 #更新api
 upapi() {
@@ -148,22 +161,12 @@ if [[ $5 = "listbranch" ]]; then
 	git pull -q
 	git branch -a;
 elif [[ $5 = "create" ]]; then
-	git pull
-	#切一个新分支
-	git checkout -t "origin/$6";
-	git pull
-	git checkout develop;
-	#新分支拷到单独的同级目录
-	echo 拷贝一个新分支到工作目录，可能花一点时间
-	cd ..
-	git clone -lvb $6 $maindir $6
+	clonebranch $6
 elif [[ $5 = "pub" ]]; then
 	if [[ -d "../$6" ]]; then
 		localPub $6;
 	else
-		echo 拷贝一个新分支到工作目录，可能花一点时间
-		cd ..
-		git clone -lvb $6 $maindir $6
+		clonebranch $6
 		localPub "$6";
 	fi
 elif [[ $5 = "distversion" ]]; then
@@ -173,9 +176,7 @@ elif [[ $5 = "dist" ]]; then
 	if [[ -d "../$6" ]]; then
 		dist "$6 $7";
 	else
-		echo 拷贝一个新分支到工作目录，可能花一点时间
-		cd ..
-		git clone -lvb $6 $maindir $6
+		clonebranch $6
 		dist "$6 $7"
 	fi
 elif [[ $5 = "clean" ]]; then
