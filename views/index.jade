@@ -1,13 +1,12 @@
 extends layout
 
 block content
-	nav(class="navbar navbar-default navbar-fixed-top")
+	nav(class="navbar navbar-default navbar-static-top")
 		div(class="container")
 			div(class="navbar-header")
-				p(class="navbar-brand") 幻城版本系统
-			p(id='ver' class="navbar-text") version：#{ver}
-			p(class="navbar-text navbar-right") power by swellee &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			
+				p(class="navbar-brand" style="color:white;") 幻城版本系统
+			p(id='ver' class="navbar-text" style="color:white;") version：#{ver}
+			p(class="navbar-text navbar-right" style="color:white;") power by swellee &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	div(class="container")
 		ul(class="nav nav-tabs")
 			li(role="presentation" class="active")
@@ -56,7 +55,7 @@ block content
 									button(type="button", id="btnDistBr", class="btn btn-primary",onclick="distBranch()") 编译发行版
 		div(id="divServer" class="container tab-pane fade")
 			p 服务器暂未接入版本系统
-	nav(class="navbar navbar-default navbar-fixed-bottom")
-		p(class="navbar-text navbar-right") pub system:
+	nav(class="navbar navbar-inverse navbar-fixed-bottom")
+		p(class="navbar-text navbar-right") &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		p(class="navbar-text navbar-right" style="color:white;") pub system:
 			a(href="https://gitlab.com/swellee/hpub") https://gitlab.com/swellee/hpub
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

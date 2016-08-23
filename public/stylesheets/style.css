@@ -1,9 +1,5 @@
-/*body {
-	background-color: #fefefe;
-}*/
-
-.navbar-default {
-	background-color: #F0F8FF;
+body {
+	background-color: #f3ffff;
 }
 
 #selectInfo {
@@ -12,9 +8,20 @@
 #btns {
 	visibility:hidden;
 }
-
+.navbar-default{
+	background-color: #316d9b;
+}
 .btn {
 	min-width: 100px;
+}
+.tab-content {
+	background-color: #F0F8FF;
+}
+.navbar-brand {
+	font-size: 1.5em;
+}
+.navbar-inverse {
+	background-color: #316d9b;
 }
 #dash {
 	background: black;
