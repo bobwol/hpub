@@ -179,7 +179,7 @@ elif [[ $5 = "clean" ]]; then
 elif [[ $5 = "logcode" ]]; then
 	cd ../$6
 	git pull -q
-	git log --since=1.days --pretty=format:"%h - %an, %ar : %s"
+	git log --since=1.days --pretty=format:"%an, %ar : %s"
 fi
 
 
