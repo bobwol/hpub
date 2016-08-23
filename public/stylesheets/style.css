@@ -7,6 +7,7 @@ body {
 }
 #btns {
 	visibility:hidden;
+	overflow: scroll;
 }
 .navbar-default{
 	background-color: #316d9b;
