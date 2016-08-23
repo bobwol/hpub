@@ -7,7 +7,6 @@ body {
 }
 #btns {
 	visibility:hidden;
-	overflow: scroll;
 }
 .navbar-default{
 	background-color: #316d9b;
@@ -23,6 +22,9 @@ body {
 }
 .navbar-inverse {
 	background-color: #316d9b;
+}
+#branchs {
+	overflow: scroll;
 }
 #dash {
 	background: black;
