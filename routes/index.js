@@ -23,11 +23,11 @@ var weburl = "http://" + ipstr.match(/192\.[0-9]+\.[0-9]+\.[0-9]+/)[0] + ":" + c
 
 
 //允许的query命令
-var validcmds = ["listbranch", "log", "pub", "create", "clean", "distversion", "dist"];
+var validcmds = ["listbranch", "log", "logcode", "pub", "create", "clean", "distversion", "dist"];
 /* GET home page. */
 router.get('/', function(req, res, next) {
     if (!req.query.cmd) {
-        res.render("index", { ver: "1.0" });
+        res.render("index", { ver: "1.1" });
         return;
     }
 
@@ -44,7 +44,7 @@ router.get('/', function(req, res, next) {
                 res.send("暂无操作记录");
                 console.log(err)
             } else {
-                res.send(stdout.toString() + "<br><p class='label'>以上是该分支的操作记录↑</p><button calss='btn btn-info' onclick=codeLog()>显示代码提交日志</button>");
+                res.send(stdout.toString() + "<br><p class='label label-default'>以上是该分支的操作记录↑</p><br><br><button class='btn btn-small btn-info' onclick=codeLog()>获取代码提交日志</button>");
             }
         });
         return;

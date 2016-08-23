@@ -91,8 +91,9 @@ function codeLog() {
         alert("请先选择一个分支，再点‘打版本’按钮！");
         return;
     }
-    fetch(`/?cmd=logcode ${selectedBranch}`, function(data, status) {
-
+    dash("以下显示的即刻起，一天内的代码提交记录：")
+    fetch(`/?cmd=logcode ${selectedBranch}&pipe=true`, function(data, status) {
+        dash(data, true);
     })
 }
 
@@ -168,9 +169,12 @@ function cleanBranch() {
     })
 }
 
-function dash(data) {
-    console.log(1)
-    $("#dash").html(data);
+function dash(data, append) {
+    if (append) {
+        $("#dash").append(data);
+    } else {
+        $("#dash").html(data);
+    }
     var div = document.getElementById("dash");
     div.scrollTop = div.scrollHeight
 }

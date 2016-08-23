@@ -176,6 +176,10 @@ elif [[ $5 = "dist" ]]; then
 	fi
 elif [[ $5 = "clean" ]]; then
 	clean $6;
+elif [[ $5 = "logcode" ]]; then
+	cd ../$6
+	git pull -q
+	git log --since=1.days --pretty=format:"%h - %an, %ar : %s"
 fi
 
 
