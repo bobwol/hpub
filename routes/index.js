@@ -27,7 +27,7 @@ var validcmds = ["listbranch", "log", "pub", "create", "clean", "distversion", "
 /* GET home page. */
 router.get('/', function(req, res, next) {
     if (!req.query.cmd) {
-        res.render("index", { ver: "beta 5" });
+        res.render("index", { ver: "1.0" });
         return;
     }
 
@@ -44,7 +44,7 @@ router.get('/', function(req, res, next) {
                 res.send("暂无操作记录");
                 console.log(err)
             } else {
-                res.send(stdout.toString() + "<br><p class='label'>以上是该分支的操作记录↑</p>");
+                res.send(stdout.toString() + "<br><p class='label'>以上是该分支的操作记录↑</p><button calss='btn btn-info' onclick=codeLog()>显示代码提交日志</button>");
             }
         });
         return;

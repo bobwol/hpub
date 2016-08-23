@@ -17,7 +17,7 @@ upload() {
 	else 
 		scp -P50044 hc_client.zip root@101.227.80.115:/opt/www/hc/
 		ssh root@101.227.80.115 -p 50044 'cd /opt/www/hc/; rm -rf hc_client; unzip hc_client.zip; mv -f hc_client.zip ../hc_release/;'
-		mv -f hc_client.zip ~/Desktop/
+		rm -f hc_client.zip
 		rm -rf hc_client
 		echo "<a class='btn btn-small btn-info' href='http://gc.hgame.com/home/game/appid/100021/gameid/100263/review/2'>点我去测试</a>"
 	fi;
@@ -27,18 +27,20 @@ clonebranch() {
 	echo 拷贝一个新分支到工作目录，可能花一点时间
 	cd $maindir
 	git fetch -a
+	git checkout ./
 	git checkout -t "origin/$1";
 	git checkout develop
 	cd ..
 	git clone -lvb $1 $maindir $1
 	cd ./$1
 	git config remote.origin.url git@gitlab.hd.com:flower/client.git
+	git config push.default simple
 	git pull
 }
 
 #更新api
 upapi() {
-	cd "$apidir"
+	cd $apidir
 	#有对应api分支的，拉取对应分支的api,没有就用develop分支的api
 	if [[ "${branchapis[@]}" =~ "$1" ]]; then
 		git checkout -f "$1"
@@ -46,7 +48,7 @@ upapi() {
 		git checkout -f develop
 	fi
 	git pull
-	cd "$apigen"
+	cd $apigen
 	java -cp ApiGen.jar ApiGen -f ../flowerTool/api/main.api -t ./template -g ts -o ./
   	cp ./ts/api.ts "${maindir}/src/app/data/"
   	cp ../flowerTool/datats/loader.ts "${maindir}/src/app/data/"
@@ -55,8 +57,8 @@ upapi() {
 	
 
 	# 切回发版目录
-	cd "$maindir"
-	cd "../$1"
+	cd $maindir
+	cd ../$1
 	git commit -am "api & data"
 	git pull -q
 	git push
@@ -66,9 +68,6 @@ upapi() {
 dist() {
 	cd $maindir
 	./n2build service stop
-	git pull -q
-	git checkout $1
-	git pull
 	cd ../$1
 	git checkout ./
 	git pull -q
@@ -85,7 +84,7 @@ dist() {
 	# 提交版本号	
 	echo ${cfg/$vstr/"version = $curVer"} > .n2.cfg
 	git add .n2.cfg
-	git commit -m "ver"
+	git commit -m "update_version_to:$curVer"
 	git push
 	# 分隔符回置
 	IFS=ifs
@@ -94,7 +93,7 @@ dist() {
 	# upapi $1
 
 	# 编译打包
-	./n2build -t dist
+	./n2build dist
 
 	if [[ $? -ne 0 ]]; then
 		#打包出错
@@ -115,10 +114,6 @@ localPub() {
 	#切回发版目录
  	cd $maindir
 	./n2build service stop
- 	git pull -q
- 	git checkout $1
- 	git pull -q
- 	git checkout develop
 	cd ../$1
 	git checkout ./
 	git pull -q
@@ -127,7 +122,7 @@ localPub() {
 	# upapi $1
 
 	echo 开始更新本地版本，大约1分钟....
-	./n2build -t
+	./n2build
 	if [[ $? -eq 0 ]]; then
 		echo "<a class='btn btn-small btn-info' href='${weburl}$1'>点我去测试</a>"
 	fi
@@ -135,7 +130,7 @@ localPub() {
 }
 
 clean(){
-	cd "$maindir"
+	cd $maindir
 	git branch -D $1
 	cd ..
 	if [[ -d "./$1"  ]]; then
@@ -167,20 +162,20 @@ elif [[ $5 = "pub" ]]; then
 		localPub $6;
 	else
 		clonebranch $6
-		localPub "$6";
+		localPub $6;
 	fi
 elif [[ $5 = "distversion" ]]; then
 	vstr=`cat .n2.cfg | grep "version"`
 	echo ${vstr##*=}
 elif [[ $5 = "dist" ]]; then
 	if [[ -d "../$6" ]]; then
-		dist "$6 $7";
+		dist $6 $7;
 	else
 		clonebranch $6
-		dist "$6 $7"
+		dist $6 $7
 	fi
 elif [[ $5 = "clean" ]]; then
-	clean "$6";
+	clean $6;
 fi
 
 

@@ -1,32 +1,23 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+	background-color: #fefefe;
 }
 
-a {
-  color: #00B7FF;
+.navbar-default {
+	background-color: #F0F8FF;
 }
-
 #selectInfo {
 	font-size: 1.2em;
 }
 #btns {
 	visibility:hidden;
 }
-.container {
-	border:1px solid #aaaaaa;
-	box-shadow: 0px 10px 5px #aaaaaa;
-	height: 60%;
-	min-height: 50%;
-	overflow: scroll;
-}
+
 .btn {
 	min-width: 100px;
 }
 #dash {
-	position: fixed;
-	top:50;
 	background: black;
 	color: #aacc00;
-	width: 50%;
+	min-height: 660px;
+	overflow: scroll;
 }
