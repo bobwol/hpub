@@ -125,7 +125,7 @@ function distVer() {
 }
 
 function distBranch() {
-    ver = $("#inputVer").text();
+    ver = $("#inputVer").val();
     if (!ver) {
         ver = $("#curVer").html();
     }
