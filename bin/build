@@ -114,6 +114,7 @@ localPub() {
 	#切回发版目录
  	cd $maindir
 	./n2build service stop
+	git fetch -p
 	cd ../$1
 	git checkout ./
 	git pull -q

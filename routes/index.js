@@ -27,7 +27,7 @@ var validcmds = ["listbranch", "log", "logcode", "pub", "create", "clean", "dist
 /* GET home page. */
 router.get('/', function(req, res, next) {
     if (!req.query.cmd) {
-        res.render("index", { ver: "1.2" });
+        res.render("index", { ver: "1.3" });
         return;
     }
 
