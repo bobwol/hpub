@@ -88,10 +88,10 @@ function chooseBranch(branch) {
 
 function codeLog() {
     if (!selectedBranch) {
-        alert("请先选择一个分支，再点‘打版本’按钮！");
+        alert("请先选择一个分支!");
         return;
     }
-    dash("<h3>以下显示的是一天内的代码提交记录：</h3><hr>")
+    dash("<h3>拉取显示的是一天内的代码提交记录：</h3><hr>")
     fetch(`/?cmd=logcode ${selectedBranch}&pipe=true`, function(data, status) {
         dash(data, true, true);
     })
@@ -108,7 +108,7 @@ function createBranch() {
 
 function pubBranch() {
     if (!selectedBranch) {
-        alert("请先选择一个分支，再点‘打版本’按钮！");
+        alert("请先选择一个分支！");
         return;
     }
     $("#btns").css("visibility", "hidden");
@@ -118,14 +118,14 @@ function pubBranch() {
     fetch(`/?cmd=pub ${selectedBranch}&pipe=true`, function(data, status) {
         dash(data);
         if (status == 4) {
-            $("#selectInfo").html(`本地分支->${selectedBranch}，编译完成`);
+            $("#selectInfo").html(`本地分支->${selectedBranch}，操作完成`);
         }
     })
 }
 
 function distVer() {
     if (!selectedBranch) {
-        alert("请先选择一个分支，再点‘打版本’按钮！");
+        alert("请先选择一个分支！");
         return;
     }
     fetch(`/?cmd=distversion`, function(data, status) {
@@ -149,14 +149,14 @@ function distBranch() {
     fetch(`/?cmd=dist ${selectedBranch} ${ver}&pipe=true`, function(data, status) {
         dash(data);
         if (status == 4) {
-            $("#selectInfo").html(`本地分支->${selectedBranch}发行版，更新完成`);
+            $("#selectInfo").html(`本地分支->${selectedBranch}发行版，操作完成`);
         }
     })
 }
 
 function cleanBranch() {
     if (!selectedBranch) {
-        alert("请先选择一个分支，再点‘清除’按钮！");
+        alert("请先选择一个分支！");
         return;
     }
     $("#dash").html("命令已发送，请勿进行其他操作！正在等待后台响应...");
@@ -180,4 +180,20 @@ function dash(data, append, cancelScroll) {
     }
     var div = document.getElementById("dash");
     div.scrollTop = div.scrollHeight
+}
+
+//---------advance------
+// 清理过时分支
+function cleanHistoryBranch() {
+    alert("还没开发完，别闹")
+}
+// 清除操作日志
+function resetExecLog() {
+    alert("还没开发完，别闹")
+    
+}
+// 更新此发版系统 
+function updateSelf() {
+    alert("还没开发完，别闹")
+    
 }

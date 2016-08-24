@@ -19,7 +19,7 @@ var apidir = path.join(workpath, cfg.apidir);
 var apigen = path.join(workpath, cfg.apigen);
 //取本地的ip加上配置的nginx端口
 var ipstr = sh.execSync('ifconfig').toString();
-var weburl = "http://" + ipstr.match(/192\.[0-9]+\.[0-9]+\.[0-9]+/)[0] + ":" + cfg.nginxPort + "/";
+var weburl = "http://" + ipstr.match(/192\.[0-9]+\.[0-9]+\.[0-9]+/)[0] + (cfg.nginxPort ? (":" + cfg.nginxPort) : '') + "/";
 
 
 //允许的query命令
@@ -27,7 +27,7 @@ var validcmds = ["listbranch", "log", "logcode", "pub", "create", "clean", "dist
 /* GET home page. */
 router.get('/', function(req, res, next) {
     if (!req.query.cmd) {
-        res.render("index", { ver: "1.3" });
+        res.render("index", { ver: "1.5" });
         return;
     }
 
@@ -37,9 +37,10 @@ router.get('/', function(req, res, next) {
     }
 
     var cmdParas = [maindir, apidir, apigen, weburl].concat(req.query.cmd.split(/\s+/));
-    if (cmdParas[4] == "log") {
-    	console.log(cmdParas[5])
-        sh.exec(`cat bin/execlog | grep ${cmdParas[5]}`, (err, stdout, stderr) => {
+    var opName = cmdParas[4];
+    var branch = cmdParas[5];//分支名
+    if (opName == "log") {
+        sh.exec(`cat bin/execlog | grep ${branch}`, (err, stdout, stderr) => {
             if (err) {
                 res.send("暂无操作记录");
                 console.log(err)
@@ -50,11 +51,16 @@ router.get('/', function(req, res, next) {
         return;
     }
     var cmdTag = cmdParas.join("_")
-        //运行中的命令标记
+    if (opName == "pub" || opName == "dist") {
+        //pub和dist操作标记合并
+        cmdTag = [maindir, apidir, apigen, weburl].concat(["pub_dist",branch]);
+    }
+    //运行中的命令标记
     if (cmdTag.indexOf("listbranch") == -1 && router[cmdTag]) {
-        res.send("有一个同分支同类型的任务正在运行，请稍后再试");
+        res.send("有一个同分支的" + opName + "任务正在运行，请稍后再试");
         return;
     }
+
 
     router[cmdTag] = true;
 
@@ -84,7 +90,7 @@ router.get('/', function(req, res, next) {
         console.log("finish");
         router[cmdTag] = false;
 
-        var log = getExecName(getClientIp(req), cmdParas[4], cmdParas[5]);
+        var log = getExecName(getClientIp(req), opName, branch);
         if (log) {
             sh.exec(`echo '${log}' >> bin/execlog`, (err, stdout, stderr) => {
                 if (err) {
