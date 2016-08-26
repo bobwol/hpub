@@ -5,6 +5,7 @@ var home = require("os").homedir();
 var path = require("path");
 var Liner = require("linerstream");
 
+var advKey = "888888";
 // config配置说明
 var cfg = require("../cfg/config.json");
 //workpath 工作目录，该目录下至少有一个maindir配置的文件夹，
@@ -24,21 +25,30 @@ var weburl = "http://" + ipstr.match(/192\.[0-9]+\.[0-9]+\.[0-9]+/)[0] + (cfg.ng
 
 //允许的query命令
 var validcmds = ["listbranch", "log", "logcode", "pub", "create", "clean", "distversion", "dist"];
+//高级功能
+var adCmds = ["cleanHistoryBranch", "resetExecLog", "updateSelf"];
 /* GET home page. */
 router.get('/', function(req, res, next) {
     if (!req.query.cmd) {
-        res.render("index", { ver: "1.5" });
+        res.render("index", { ver: "1.6" });
         return;
     }
 
-    if (validcmds.indexOf(req.query.cmd.split(/\s+/)[0]) == -1) {
+    var opName = req.query.cmd.split(/\s+/)[0];
+
+    //高级命令单独处理
+    if (adCmds.indexOf(opName) != -1) {
+        dealAdvCmd(opName, res, req.query.key);
+        return;
+    }
+
+    if (validcmds.indexOf(opName) == -1) {
         res.send("非法请求！");
         return;
     }
 
     var cmdParas = [maindir, apidir, apigen, weburl].concat(req.query.cmd.split(/\s+/));
-    var opName = cmdParas[4];
-    var branch = cmdParas[5];//分支名
+    var branch = cmdParas[5]; //分支名
     if (opName == "log") {
         sh.exec(`cat bin/execlog | grep ${branch}`, (err, stdout, stderr) => {
             if (err) {
@@ -53,7 +63,7 @@ router.get('/', function(req, res, next) {
     var cmdTag = cmdParas.join("_")
     if (opName == "pub" || opName == "dist") {
         //pub和dist操作标记合并
-        cmdTag = [maindir, apidir, apigen, weburl].concat(["pub_dist",branch]);
+        cmdTag = [maindir, apidir, apigen, weburl].concat(["pub_dist", branch]);
     }
     //运行中的命令标记
     if (cmdTag.indexOf("listbranch") == -1 && router[cmdTag]) {
@@ -103,11 +113,11 @@ router.get('/', function(req, res, next) {
 });
 
 function getClientIp(req) {
-        var ipstr = req.headers['x-forwarded-for'] ||
+    var ipstr = req.headers['x-forwarded-for'] ||
         req.connection.remoteAddress ||
         req.socket.remoteAddress ||
         req.connection.socket.remoteAddress;
-        return ipstr.split(":").pop();
+    return ipstr.split(":").pop();
 }
 
 
@@ -116,7 +126,7 @@ function getExecName(ip, op, branch) {
     var log = dt.getMonth() + 1;
     log += "月" + dt.getDate() + "日";
     log += dt.toTimeString().match(/[0-9]+\:[0-9]+\:[0-9]+/)[0]
-    // body...
+        // body...
     var opName = '';
     switch (op) {
         case "pub":
@@ -137,6 +147,55 @@ function getExecName(ip, op, branch) {
     }
 
     return log + "由" + ip + "对分支" + branch + "进行了" + opName;
+}
+
+function dealAdvCmd(opName, res, sign) {
+    if (sign != advKey) {
+        res.send("密钥错误！");
+        return;
+    }
+    // body...
+    switch (opName) {
+        case "cleanHistoryBranch":
+            sh.exec("git branch -a", (err, stdout, stderr) => {
+                if (err) {
+                    res.send("出错了>>" + err);
+                    return;
+                }
+
+                data = stdout.toString().replace("*", "")
+                var lines = data.split("\n");
+                var olds = [];
+                for (var i in lines) {
+                    var ln = lines[i];
+                    ln = ln.trim();
+                    if (ln == '') {
+                        continue;
+                    }
+                    if (ln.indexOf("remotes") == -1) {
+                        if (data.indexOf("origin/" + ln) == -1) {
+                            olds.push(ln);
+                        }
+                    }
+                }
+                //clear
+                var out = "";
+                while(olds.length) {
+                    var br = olds.pop();
+                    out += sh.execSync(`cd ${maindir} && rm -rf ${br}`);
+                }
+                res.send(out + "<br>操作完成");
+            })
+            break;
+        case "resetExecLog":
+            sh.execSync("git checkout bin/execlog");
+            res.send("重置完成");
+            break;
+        case "updateSelf":
+            var str = sh.execSync("git pull")
+            res.send(str + "<br>更新完成");
+            break;
+    }
 }
 
 

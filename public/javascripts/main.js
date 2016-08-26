@@ -113,7 +113,7 @@ function pubBranch() {
     }
     $("#btns").css("visibility", "hidden");
     $("#selectInfo").html(`开始编译分支->${selectedBranch}的本地测试版，请稍等...`);
-    $("#dash").html("命令已发送，请勿进行其他操作！正在等待后台响应...");
+    dash("命令已发送，请勿进行其他操作！正在等待后台响应...");
 
     fetch(`/?cmd=pub ${selectedBranch}&pipe=true`, function(data, status) {
         dash(data);
@@ -145,7 +145,7 @@ function distBranch() {
     $("#btns").css("visibility", "hidden");
 
     $("#selectInfo").html(`开始编译分支->${selectedBranch}的发行版，使用版本号${ver},请稍等...`);
-    $("#dash").html("命令已发送，请勿进行其他操作！正在等待后台响应...");
+    dash("命令已发送，请勿进行其他操作！正在等待后台响应...");
     fetch(`/?cmd=dist ${selectedBranch} ${ver}&pipe=true`, function(data, status) {
         dash(data);
         if (status == 4) {
@@ -159,7 +159,7 @@ function cleanBranch() {
         alert("请先选择一个分支！");
         return;
     }
-    $("#dash").html("命令已发送，请勿进行其他操作！正在等待后台响应...");
+    dash("命令已发送，请勿进行其他操作！正在等待后台响应...");
     fetch(`/?cmd=clean ${selectedBranch}`, function(data, status) {
         if (status != 4) {
             return;
@@ -185,15 +185,31 @@ function dash(data, append, cancelScroll) {
 //---------advance------
 // 清理过时分支
 function cleanHistoryBranch() {
-    alert("还没开发完，别闹")
+    var key = prompt("请输入高级功能的密钥：");
+    dash("命令已发送，请勿进行其他操作！正在等待后台响应...")
+    fetch("/?cmd=cleanHistoryBranch&key=" + key, function(data, status) {
+        if (status == 4) {
+            dash(data);
+        }
+    })
 }
 // 清除操作日志
 function resetExecLog() {
-    alert("还没开发完，别闹")
-    
+    var key = prompt("请输入高级功能的密钥：");
+    dash("命令已发送，请勿进行其他操作！正在等待后台响应...")
+    fetch("/?cmd=resetExecLog&key=" + key, function(data, status) {
+        if (status == 4) {
+            dash(data);
+        }
+    })
 }
 // 更新此发版系统 
 function updateSelf() {
-    alert("还没开发完，别闹")
-    
+    var key = prompt("请输入高级功能的密钥：");
+    dash("命令已发送，请勿进行其他操作！正在等待后台响应...")
+    fetch("/?cmd=updateSelf&key=" + key, function(data, status) {
+        if (status == 4) {
+            dash(data);
+        }
+    })
 }

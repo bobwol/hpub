@@ -23,6 +23,12 @@ body {
 .navbar-inverse {
 	background-color: #316d9b;
 }
+.dropdown-menu {
+	background-color: #316d9b;
+}
+.dropdown li a {
+	color: white;
+}
 #branchs {
 	overflow: scroll;
 	height: 660px;
