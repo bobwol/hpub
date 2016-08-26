@@ -67,7 +67,7 @@ router.get('/', function(req, res, next) {
     }
     //运行中的命令标记
     if (cmdTag.indexOf("listbranch") == -1 && router[cmdTag]) {
-        res.send("有一个同分支的" + opName + "任务正在运行，请稍后再试");
+        res.send("有一个同分支的编译任务正在运行，请稍后再试");
         return;
     }
 
