@@ -17,9 +17,9 @@ upload() {
 	elif [[ $1 = "lanzuan" ]]; then
 		mv publish hcqqgame_client
 		zip -ry hcqqgame_client.zip hcqqgame_client
-		echo "上传qq平台 "
-		scp -v -P60022 hcqqgame_client.zip root@115.159.209.173:/opt/www_qqgame/
-		ssh root@115.159.209.173 -p 60022 'cd /opt/www_qqgame/; cp -f hcqqgame_client/app.json ./; rm -rf hcqqgame_client; unzip hcqqgame_client.zip; mv -f app.json hcqqgame_client/; rm -f hcqqgame_client.zip;'
+		echo 上传qq平台
+		scp -v -P60022 hcqqgame_client.zip root@115.159.209.173:/opt/www/hc/hc_qqgame/
+		ssh root@115.159.209.173 -p 60022 'cd /opt/www/hc/hc_qqgame/; cp -f hcqqgame_client/app.json ./; rm -rf hcqqgame_client; unzip hcqqgame_client.zip; mv -f app.json hcqqgame_client/; rm -f hcqqgame_client.zip;'
 		echo 上传内网
 		scp -v -P50044 hcqqgame_client.zip root@101.227.80.115:/opt/www/hc/
 		ssh root@101.227.80.115 -p 50044 'cd /opt/www/hc/; rm -rf hcqqgame_client; unzip hcqqgame_client.zip; mv -f hcqqgame_client.zip ../hc_release/;'
