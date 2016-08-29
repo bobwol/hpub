@@ -114,19 +114,16 @@ dist() {
 	# upapi $1
 
 	# 编译打包
-	./n2build dist
+	./n2build dist;
 
 	if [[ $? -ne 0 ]]; then
 		#打包出错
 		echo "发版出错了！！！"
 		/n2build service stop
-		return;
 	else
-		/n2build service stop
 		upload $1
-	fi
-
-	
+		/n2build service stop
+	fi	
 }
 
 # 发本地版本
@@ -187,6 +184,8 @@ elif [[ $5 = "pub" ]]; then
 		localPub $6;
 	fi
 elif [[ $5 = "distversion" ]]; then
+	cd ../$6
+	git pull -q
 	vstr=`cat .n2.cfg | grep "version"`
 	echo ${vstr##*=}
 elif [[ $5 = "dist" ]]; then

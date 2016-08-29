@@ -128,7 +128,7 @@ function distVer() {
         alert("请先选择一个分支！");
         return;
     }
-    fetch(`/?cmd=distversion`, function(data, status) {
+    fetch(`/?cmd=distversion ${selectedBranch}`, function(data, status) {
         $("#curVer").html(data);
         $("#inputVer").attr("placeholder", data);
         $("#verModal").modal("show");
@@ -190,8 +190,8 @@ function cleanHistoryBranch() {
     fetch("/?cmd=cleanHistoryBranch&key=" + key, function(data, status) {
         if (status == 4) {
             dash(data);
-            var cfm = confirm("操作完成，刷新页面？");
-            if (cfm)window.location.reload();
+            dash("<br>操作完成，即将刷新页面...",true);
+            setTimeout(window.location.reload(), 3000);
         }
     })
 }
@@ -202,8 +202,8 @@ function resetExecLog() {
     fetch("/?cmd=resetExecLog&key=" + key, function(data, status) {
         if (status == 4) {
             dash(data);
-            var cfm = confirm("操作完成，刷新页面？");
-            if (cfm)window.location.reload();
+            dash("<br>操作完成，即将刷新页面...",true);
+            setTimeout(window.location.reload(), 3000);
         }
     })
 }
@@ -214,8 +214,8 @@ function updateSelf() {
     fetch("/?cmd=updateSelf&key=" + key, function(data, status) {
         if (status == 4) {
             dash(data);
-            var cfm = confirm("操作完成，刷新页面？");
-            if (cfm)window.location.reload();
+            dash("<br>操作完成，即将刷新页面...",true);
+            setTimeout(window.location.reload(), 3000);
         }
     })
 }
