@@ -128,6 +128,9 @@ function distVer() {
         alert("请先选择一个分支！");
         return;
     }
+    $("#curVer").html("正在拉取该分支的版本号...");
+    $("#inputVer").attr("placeholder", '');
+    $("#verModal").modal("show");
     fetch(`/?cmd=distversion ${selectedBranch}`, function(data, status) {
         $("#curVer").html(data);
         $("#inputVer").attr("placeholder", data);
@@ -190,7 +193,7 @@ function cleanHistoryBranch() {
     fetch("/?cmd=cleanHistoryBranch&key=" + key, function(data, status) {
         if (status == 4) {
             dash(data);
-            dash("<br>操作完成，即将刷新页面...",true);
+            dash("<br>操作完成，即将刷新页面...", true);
             setTimeout(window.location.reload(), 3000);
         }
     })
@@ -202,7 +205,7 @@ function resetExecLog() {
     fetch("/?cmd=resetExecLog&key=" + key, function(data, status) {
         if (status == 4) {
             dash(data);
-            dash("<br>操作完成，即将刷新页面...",true);
+            dash("<br>操作完成，即将刷新页面...", true);
             setTimeout(window.location.reload(), 3000);
         }
     })
@@ -214,7 +217,7 @@ function updateSelf() {
     fetch("/?cmd=updateSelf&key=" + key, function(data, status) {
         if (status == 4) {
             dash(data);
-            dash("<br>操作完成，即将刷新页面...",true);
+            dash("<br>操作完成，即将刷新页面...", true);
             setTimeout(window.location.reload(), 3000);
         }
     })

@@ -30,7 +30,7 @@ var adCmds = ["cleanHistoryBranch", "resetExecLog", "updateSelf"];
 /* GET home page. */
 router.get('/', function(req, res, next) {
     if (!req.query.cmd) {
-        res.render("index", { ver: "1.8" });
+        res.render("index", { ver: "1.9" });
         return;
     }
 
