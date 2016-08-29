@@ -8,7 +8,7 @@ upload() {
 	if [[ $1 = "pingshen" ]];then
 		mv publish hc_client
 		zip -ry hc_client.zip hc_client
-		scp -P50050 hc_client.zip root@101.227.80.116:/opt/www/hc/
+		scp -v -P50050 hc_client.zip root@101.227.80.116:/opt/www/hc/
 		#不覆盖已有的app.json
 		ssh root@101.227.80.116 -p 50050 'cd /opt/www/hc/; cp -f hc_client/app.json ./; rm -rf hc_client; unzip hc_client.zip; mv -f app.json hc_client/; rm -f hc_client.zip;'
 		rm -f hc_client.zip
@@ -18,18 +18,18 @@ upload() {
 		mv publish hcqqgame_client
 		zip -ry hcqqgame_client.zip hcqqgame_client
 		echo "上传qq平台 "
-		scp -P60022 hcqqgame_client.zip root@115.159.209.173:/opt/www_qqgame/
+		scp -v -P60022 hcqqgame_client.zip root@115.159.209.173:/opt/www_qqgame/
 		ssh root@115.159.209.173 -p 60022 'cd /opt/www_qqgame/; cp -f hcqqgame_client/app.json ./; rm -rf hcqqgame_client; unzip hcqqgame_client.zip; mv -f app.json hcqqgame_client/; rm -f hcqqgame_client.zip;'
 		echo 上传内网
-		scp -P50044 hcqqgame_client.zip root@101.227.80.115:/opt/www/
-		ssh root@101.227.80.115 -p 50044 'cd /opt/www/; rm -rf hcqqgame_client; unzip hcqqgame_client.zip; mv -f hcqqgame_client.zip ../hc_release/;'
+		scp -v -P50044 hcqqgame_client.zip root@101.227.80.115:/opt/www/hc/
+		ssh root@101.227.80.115 -p 50044 'cd /opt/www/hc/; rm -rf hcqqgame_client; unzip hcqqgame_client.zip; mv -f hcqqgame_client.zip ../hc_release/;'
 
 		rm hcqqgame_client.zip
 		rm -rf hcqqgame_client
 	else 
 		mv publish hc_client
 		zip -ry hc_client.zip hc_client
-		scp -P50044 hc_client.zip root@101.227.80.115:/opt/www/hc/
+		scp -v -P50044 hc_client.zip root@101.227.80.115:/opt/www/hc/
 		ssh root@101.227.80.115 -p 50044 'cd /opt/www/hc/; rm -rf hc_client; unzip hc_client.zip; mv -f hc_client.zip ../hc_release/;'
 		rm -f hc_client.zip
 		rm -rf hc_client
@@ -50,6 +50,12 @@ clonebranch() {
 	git config remote.origin.url git@gitlab.hd.com:flower/client.git
 	git config push.default simple
 	git pull
+	if [[ -f "index.html" ]]; then
+		echo ok
+	else
+		cp $maindir/index.html ./
+		echo ok
+	fi
 }
 
 #更新api
