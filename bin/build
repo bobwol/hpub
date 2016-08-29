@@ -26,6 +26,7 @@ upload() {
 
 		rm hcqqgame_client.zip
 		rm -rf hcqqgame_client
+		echo "<a class='btn btn-small btn-info' href='http://qqgame.qq.com/webappframe/?appid=10501'>点我去测试</a>"
 	else 
 		mv publish hc_client
 		zip -ry hc_client.zip hc_client
