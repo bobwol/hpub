@@ -190,6 +190,7 @@ function cleanHistoryBranch() {
     fetch("/?cmd=cleanHistoryBranch&key=" + key, function(data, status) {
         if (status == 4) {
             dash(data);
+            window.location.reload();
         }
     })
 }
@@ -200,6 +201,7 @@ function resetExecLog() {
     fetch("/?cmd=resetExecLog&key=" + key, function(data, status) {
         if (status == 4) {
             dash(data);
+            window.location.reload();
         }
     })
 }
@@ -210,6 +212,7 @@ function updateSelf() {
     fetch("/?cmd=updateSelf&key=" + key, function(data, status) {
         if (status == 4) {
             dash(data);
+            window.location.reload();
         }
     })
 }
