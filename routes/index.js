@@ -22,7 +22,6 @@ var apigen = path.join(workpath, cfg.apigen);
 var ipstr = sh.execSync('ifconfig').toString();
 var weburl = "http://" + ipstr.match(/192\.[0-9]+\.[0-9]+\.[0-9]+/)[0] + (cfg.nginxPort ? (":" + cfg.nginxPort) : '') + "/";
 
-
 //允许的query命令
 var validcmds = ["listbranch", "log", "logcode", "pub", "create", "clean", "distversion", "dist"];
 //高级功能
@@ -63,7 +62,7 @@ router.get('/', function(req, res, next) {
     var cmdTag = cmdParas.join("_")
     if (opName == "pub" || opName == "dist") {
         //pub和dist操作标记合并
-        cmdTag = [maindir, apidir, apigen, weburl].concat(["pub_dist", branch]);
+        cmdTag = [maindir, apidir, apigen, weburl].concat(["pub_dist", branch]).join("_");
     }
     //运行中的命令标记
     if (cmdTag.indexOf("listbranch") == -1 && router[cmdTag]) {
@@ -73,6 +72,7 @@ router.get('/', function(req, res, next) {
 
 
     router[cmdTag] = true;
+    res.opTag = cmdTag;
 
     if (req.query.pipe) {
         var splitter = new Liner();
@@ -98,7 +98,7 @@ router.get('/', function(req, res, next) {
     }
     res.on("finish", () => {
         console.log("finish");
-        router[cmdTag] = false;
+        router[res.opTag] = false;
 
         var log = getExecName(getClientIp(req), opName, branch);
         if (log) {
