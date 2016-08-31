@@ -29,7 +29,7 @@ var adCmds = ["cleanHistoryBranch", "resetExecLog", "updateSelf"];
 /* GET home page. */
 router.get('/', function(req, res, next) {
     if (!req.query.cmd) {
-        res.render("index", { ver: "1.9" });
+        res.render("index", { ver: "2.0" });
         return;
     }
 
@@ -73,6 +73,8 @@ router.get('/', function(req, res, next) {
 
     router[cmdTag] = true;
     res.opTag = cmdTag;
+    res.opName = opName;
+    res.opBranch = branch;
 
     if (req.query.pipe) {
         var splitter = new Liner();
@@ -85,6 +87,7 @@ router.get('/', function(req, res, next) {
         })
         splitter.on("end", (data) => {
             res.end('');
+            onOpFinish(req, res);
         })
     } else {
         sh.execFile(shellpath, cmdParas, (err, stdout, stderr) => {
@@ -93,24 +96,25 @@ router.get('/', function(req, res, next) {
                 return;
             }
             res.send(stdout);
-            console.log(stdout)
+            console.log(stdout);
+            onOpFinish(req, res);
         })
     }
-    res.on("finish", () => {
-        console.log("finish");
-        router[res.opTag] = false;
-
-        var log = getExecName(getClientIp(req), opName, branch);
-        if (log) {
-            sh.exec(`echo '${log}' >> bin/execlog`, (err, stdout, stderr) => {
-                if (err) {
-                    console.log(`写入log失败>>${req.url}`, err);
-                }
-            })
-        }
-    })
-
 });
+
+function onOpFinish(req, res) {
+    console.log("finish");
+    router[res.opTag] = false;
+
+    var log = getExecName(getClientIp(req), res.opName, res.opBranch);
+    if (log) {
+        sh.exec(`echo '${log}' >> bin/execlog`, (err, stdout, stderr) => {
+            if (err) {
+                console.log(`写入log失败>>${req.url}`, err);
+            }
+        })
+    }
+}
 
 function getClientIp(req) {
     var ipstr = req.headers['x-forwarded-for'] ||
@@ -180,7 +184,7 @@ function dealAdvCmd(opName, res, sign) {
                 }
                 //clear
                 var out = "";
-                while(olds.length) {
+                while (olds.length) {
                     var br = olds.pop();
                     out += sh.execSync(`cd ${maindir} && rm -rf ${br}`);
                 }
