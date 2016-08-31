@@ -119,10 +119,10 @@ dist() {
 	if [[ $? -ne 0 ]]; then
 		#打包出错
 		echo "发版出错了！！！"
-		/n2build service stop
+		./n2build service stop
 	else
 		upload $1
-		/n2build service stop
+		./n2build service stop
 	fi	
 }
 

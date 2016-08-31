@@ -31,11 +31,11 @@ body {
 }
 #branchs {
 	overflow: scroll;
-	height: 660px;
+	height: 600px;
 }
 #dash {
 	background: black;
 	color: #aacc00;
-	height: 660px;
+	height: 600px;
 	overflow: scroll;
 }

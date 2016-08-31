@@ -54,7 +54,7 @@ router.get('/', function(req, res, next) {
                 res.send("暂无操作记录");
                 console.log(err)
             } else {
-                res.send(stdout.toString().replace("\n", "<br>") + 
+                res.send(stdout.toString().replace("\n", "<br>") +
                     "<br><p class='label label-default'>以上是该分支的操作记录↑</p><br><br><button class='btn btn-small btn-info' onclick=codeLog()>获取代码提交日志</button>");
             }
         });
@@ -88,7 +88,6 @@ router.get('/', function(req, res, next) {
         })
         splitter.on("end", (data) => {
             res.end('');
-            onOpFinish(req, res);
         })
     } else {
         sh.execFile(shellpath, cmdParas, (err, stdout, stderr) => {
@@ -98,9 +97,12 @@ router.get('/', function(req, res, next) {
             }
             res.send(stdout);
             console.log(stdout);
-            onOpFinish(req, res);
         })
     }
+    //on finish response
+    res.on("finish", (code) => {
+        onOpFinish(req, res);
+    })
 });
 
 function onOpFinish(req, res) {
