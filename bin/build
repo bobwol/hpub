@@ -132,7 +132,6 @@ localPub() {
 	#切回发版目录
  	cd $maindir
 	./n2build service stop
-	git fetch -p
 	cd ../$1
 	git checkout ./
 	git pull -q
@@ -173,6 +172,7 @@ weburl=$4;
 cd $maindir
 
 if [[ $5 = "listbranch" ]]; then
+	git fetch -pq
 	git pull -q
 	git branch -a;
 elif [[ $5 = "create" ]]; then
