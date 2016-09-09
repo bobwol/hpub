@@ -64,6 +64,8 @@ function getBranchInfo() {
             }
 
         })
+
+        backDash();
     });
 }
 
@@ -113,12 +115,13 @@ function pubBranch() {
     }
     $("#btns").css("visibility", "hidden");
     $("#selectInfo").html(`开始编译分支->${selectedBranch}的本地测试版，请稍等...`);
-    dash("命令已发送，请勿进行其他操作！正在等待后台响应...");
+    popDash("命令已发送，请勿进行其他操作！正在等待后台响应...");
 
     fetch(`/?cmd=pub ${selectedBranch}&pipe=true`, function(data, status) {
         dash(data);
         if (status == 4) {
             $("#selectInfo").html(`本地分支->${selectedBranch}，操作完成`);
+            backDash();
         }
     })
 }
@@ -148,11 +151,12 @@ function distBranch() {
     $("#btns").css("visibility", "hidden");
 
     $("#selectInfo").html(`开始编译分支->${selectedBranch}的发行版，使用版本号${ver},请稍等...`);
-    dash("命令已发送，请勿进行其他操作！正在等待后台响应...");
+    popDash("命令已发送，请勿进行其他操作！正在等待后台响应...");
     fetch(`/?cmd=dist ${selectedBranch} ${ver}&pipe=true`, function(data, status) {
         dash(data);
         if (status == 4) {
             $("#selectInfo").html(`本地分支->${selectedBranch}发行版，操作完成`);
+            backDash();
         }
     })
 }
@@ -162,7 +166,7 @@ function cleanBranch() {
         alert("请先选择一个分支！");
         return;
     }
-    dash("命令已发送，请勿进行其他操作！正在等待后台响应...");
+    popDash("命令已发送，请勿进行其他操作！正在等待后台响应...");
     fetch(`/?cmd=clean ${selectedBranch}`, function(data, status) {
         if (status != 4) {
             return;
@@ -185,11 +189,23 @@ function dash(data, append, cancelScroll) {
     div.scrollTop = div.scrollHeight
 }
 
+function popDash(txt) {
+    var ds = $("#dash");
+    ds.html(txt);
+    $("#poplayer").append(ds);
+    $("#cover").fadeIn();
+}
+
+function backDash() {
+    $("#btns").after($("#dash"));
+    $("#cover").fadeOut();
+}
+
 //---------advance------
 // 清理过时分支
 function cleanHistoryBranch() {
     var key = prompt("请输入高级功能的密钥：");
-    dash("命令已发送，请勿进行其他操作！正在等待后台响应...")
+    popDash("命令已发送，请勿进行其他操作！正在等待后台响应...")
     fetch("/?cmd=cleanHistoryBranch&key=" + key, function(data, status) {
         if (status == 4) {
             dash(data);
@@ -201,7 +217,7 @@ function cleanHistoryBranch() {
 // 清除操作日志
 function resetExecLog() {
     var key = prompt("请输入高级功能的密钥：");
-    dash("命令已发送，请勿进行其他操作！正在等待后台响应...")
+    popDash("命令已发送，请勿进行其他操作！正在等待后台响应...")
     fetch("/?cmd=resetExecLog&key=" + key, function(data, status) {
         if (status == 4) {
             dash(data);
@@ -213,7 +229,7 @@ function resetExecLog() {
 // 更新此发版系统 
 function updateSelf() {
     var key = prompt("请输入高级功能的密钥：");
-    dash("命令已发送，请勿进行其他操作！正在等待后台响应...")
+    popDash("命令已发送，请勿进行其他操作！正在等待后台响应...")
     fetch("/?cmd=updateSelf&key=" + key, function(data, status) {
         if (status == 4) {
             dash(data);
