@@ -25,7 +25,7 @@ var weburl = "http://" + ipstr.match(/192\.[0-9]+\.[0-9]+\.[0-9]+/)[0] + (cfg.ng
 //允许的query命令
 var validcmds = ["listbranch", "log", "logcode", "pub", "create", "clean", "distversion", "dist"];
 //高级功能
-var adCmds = ["cleanHistoryBranch", "resetExecLog", "updateSelf"];
+var adCmds = ["resetExecLog", "updateSelf"];
 /* GET home page. */
 router.get('/', function(req, res, next) {
     if (!req.query.cmd) {
@@ -163,37 +163,6 @@ function dealAdvCmd(opName, res, sign) {
     }
     // body...
     switch (opName) {
-        case "cleanHistoryBranch":
-            sh.exec("git branch -a", (err, stdout, stderr) => {
-                if (err) {
-                    res.send("出错了>>" + err);
-                    return;
-                }
-
-                data = stdout.toString().replace("*", "")
-                var lines = data.split("\n");
-                var olds = [];
-                for (var i in lines) {
-                    var ln = lines[i];
-                    ln = ln.trim();
-                    if (ln == '') {
-                        continue;
-                    }
-                    if (ln.indexOf("remotes") == -1) {
-                        if (data.indexOf("origin/" + ln) == -1) {
-                            olds.push(ln);
-                        }
-                    }
-                }
-                //clear
-                var out = "";
-                while (olds.length) {
-                    var br = olds.pop();
-                    out += sh.execSync(`cd ${maindir} && rm -rf ${br}`);
-                }
-                res.send(out + "<br>操作完成");
-            })
-            break;
         case "resetExecLog":
             sh.execSync("git checkout bin/execlog");
             res.send("重置完成");
