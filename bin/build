@@ -150,6 +150,7 @@ localPub() {
 
 clean(){
 	cd $maindir
+	git checkout develop
 	git branch -D $1
 	cd ..
 	if [[ -d "./$1"  ]]; then

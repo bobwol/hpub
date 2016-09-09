@@ -39,6 +39,7 @@ function getBranchInfo() {
         var lines = data.split("\n");
         var locals = [];
         var remotes = [];
+        var outdates = [];
         for (var i in lines) {
             var ln = lines[i];
             ln = ln.trim();
@@ -47,12 +48,19 @@ function getBranchInfo() {
             }
             if (ln.indexOf("remotes") == -1) {
                 //本地已有的分支
-                locals.push(ln);
-                $("#branchs").append(`<button class='btn btn-small btn-info' label='${ln}' onclick='chooseBranch("${ln}")'>${ln}</button>`);
+                var reg = new RegExp(ln , "g");
+                if (data.match(reg).length <= 1) {
+                    //些本地分支在远程已不存在
+                    outdates.push(ln);
+                } else {
+                    locals.push(ln);
+                    $("#branchs").append(`<button class='btn btn-small btn-info' label='${ln}' onclick='chooseBranch("${ln}")'>${ln}</button>`);
+                }
             } else {
                 remotes.push(ln);
             }
         }
+
 
         $("#branchs").append("<hr>");
         //筛选未checkout 到本地的分支
@@ -63,10 +71,25 @@ function getBranchInfo() {
                 $("#branchs").append(`<button class='btn btn-warning btn-small' label='${r}' onclick='chooseBranch("${r}")'>${lb}</button>`);
             }
 
-        })
-
+        });
+        //dash回位
         backDash();
+        //清除过时分支
+        cleanOutDateBranchs(outdates);
     });
+}
+
+//批量清除过期分支
+function cleanOutDateBranchs(outdates) {
+    if (outdates.length) {
+        var br = outdates.pop();
+        fetch(`/?cmd=clean ${br}`, function(data, status) {
+            if (status != 4) {
+                return;
+            }
+            cleanOutDateBranchs(outdates);
+        })
+    }
 }
 
 
