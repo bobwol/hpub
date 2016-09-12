@@ -51,11 +51,13 @@ router.get('/', function(req, res, next) {
     if (opName == "log") {
         sh.exec(`cat bin/execlog | grep ${branch}`, (err, stdout, stderr) => {
             if (err) {
-                res.send("暂无操作记录");
+                res.send(`暂无操作记录<br><a class='btn btn-small btn-info' href='${weburl}${branch}'>直接去测试</a>`);
                 console.log(err)
             } else {
-                res.send(stdout.toString().replace("\n", "<br>") +
-                    "<br><p class='label label-default'>以上是该分支的操作记录↑</p><br><br><button class='btn btn-small btn-info' onclick=codeLog()>获取代码提交日志</button>");
+                res.send(stdout.toString().replace("\n", "<br>") + 
+                    "<br><p class='label label-default'>以上是该分支的操作记录↑</p><br>" + 
+                    `<a class='btn btn-small btn-info' href='${weburl}${branch}'>直接去测试</a>` +
+                    "<br><button class='btn btn-small btn-info' onclick=codeLog()>获取代码提交日志</button>");
             }
         });
         return;
