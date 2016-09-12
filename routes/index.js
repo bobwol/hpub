@@ -56,7 +56,7 @@ router.get('/', function(req, res, next) {
             } else {
                 res.send(stdout.toString().replace("\n", "<br>") + 
                     "<br><p class='label label-default'>以上是该分支的操作记录↑</p><br>" + 
-                    `<a class='btn btn-small btn-info' href='${weburl}${branch}'>直接去测试</a>` +
+                    `<a class='btn btn-small btn-info' href='${weburl}${branch}'>直接去测试</a><span>&nbsp;</span>` +
                     "<button class='btn btn-small btn-info' onclick=codeLog()>获取代码提交日志</button>");
             }
         });
